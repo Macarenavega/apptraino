@@ -1,0 +1,71 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-surface: var(--surface);
+  --color-page: var(--page);
+  --color-line: var(--line);
+  --color-track: var(--track);
+}
+
+:root {
+  --page: #f6f7f9;
+  --surface: #ffffff;
+  --line: #e3e6eb;
+  --track: #e3e6eb;
+  --muted: #5f6b7a;
+  --text: #15191e;
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #0f1216;
+    --surface: #181c22;
+    --line: #2a3039;
+    --track: #2a3039;
+    --muted: #97a3b2;
+    --text: #e8ecf1;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+}
+
+@utility text-muted {
+  color: var(--muted);
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-surface p-4;
+  }
+  .input {
+    @apply w-full rounded-lg border border-line bg-page px-3 py-2 outline-none focus:border-emerald-500;
+  }
+  .btn-primary {
+    @apply rounded-xl bg-emerald-600 px-4 py-2 font-semibold text-white active:bg-emerald-700 disabled:opacity-40;
+  }
+  .btn-ghost {
+    @apply inline-block rounded-xl border border-line px-4 py-2 font-medium active:bg-track;
+  }
+  .btn-timer {
+    @apply rounded-lg bg-white/20 px-3 py-2 text-sm font-semibold active:bg-white/30;
+  }
+  .set-btn {
+    @apply h-11 min-w-11 rounded-lg border border-line bg-page px-3 font-semibold active:bg-track disabled:opacity-40;
+  }
+  .set-done {
+    @apply border-emerald-600 bg-emerald-600 text-white;
+  }
+  .chip {
+    @apply rounded-full border border-line bg-surface px-3 py-1.5 text-sm;
+  }
+  .chip-active {
+    @apply border-emerald-600 bg-emerald-600 text-white;
+  }
+}
