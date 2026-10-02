@@ -92,6 +92,17 @@ export function SettingsView({ state, update }: Props) {
       </section>
 
       <section className="card">
+        <h2 className="font-semibold">Créditos</h2>
+        <p className="mt-1 text-sm text-muted">
+          Imágenes de ejercicios de{' '}
+          <a className="underline" href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noreferrer">
+            free-exercise-db
+          </a>{' '}
+          (dominio público).
+        </p>
+      </section>
+
+      <section className="card">
         <h2 className="font-semibold">Tus datos</h2>
         <p className="mt-1 text-sm text-muted">
           Todo se guarda solo en este dispositivo. Haz un respaldo de vez en cuando para no perderlo.

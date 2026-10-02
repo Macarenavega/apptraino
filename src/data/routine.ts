@@ -389,3 +389,44 @@ export function formatTarget(t: Target, sets: number) {
       return t.label
   }
 }
+
+export type ExerciseImage = {
+  /** Carpeta en public/exercises (tomada de free-exercise-db, dominio público) */
+  folder: string
+  /** Aclaración cuando la imagen no es exactamente tu variante */
+  note?: string
+}
+
+/** Imágenes de referencia (posición inicial y final) por ejercicio */
+export const EXERCISE_IMAGES: Record<string, ExerciseImage> = {
+  'pushup-inclinado': { folder: 'Incline_Push-Up' },
+  'full-pushup-inclinado': { folder: 'Incline_Push-Up' },
+  'press-hombro-banda': { folder: 'Shoulder_Press_-_With_Bands' },
+  'press-hombro-banda-extra': { folder: 'Shoulder_Press_-_With_Bands' },
+  'plancha-rodillas': { folder: 'Plank', note: 'La imagen muestra la plancha completa; tú apoyas las rodillas.' },
+  superman: { folder: 'Superman' },
+  'sentadilla-asistida': {
+    folder: 'Bodyweight_Squat',
+    note: 'La imagen es sin apoyo; tú te sostienes de una silla o marco de puerta.',
+  },
+  'full-sentadilla-asistida': {
+    folder: 'Bodyweight_Squat',
+    note: 'La imagen es sin apoyo; tú te sostienes de una silla o marco de puerta.',
+  },
+  'sentadilla-peso': { folder: 'Bodyweight_Squat', note: 'Puedes sumar una mochila con libros como carga.' },
+  'puente-gluteo': { folder: 'Butt_Lift_Bridge' },
+  'zancada-estatica': {
+    folder: 'Bodyweight_Walking_Lunge',
+    note: 'La imagen muestra la zancada caminando; tú la haces en el lugar y con apoyo de una silla.',
+  },
+  'pantorrilla-a': { folder: 'Calf_Raises_-_With_Bands', note: 'Tú la haces sin banda.' },
+  'pantorrilla-b': { folder: 'Calf_Raises_-_With_Bands', note: 'Tú la haces sin banda.' },
+  'dead-bug': { folder: 'Dead_Bug' },
+  'triceps-banda': { folder: 'Speed_Band_Overhead_Triceps', note: 'Una variante posible: extensión por encima de la cabeza.' },
+  'step-up': { folder: 'Step-up_with_Knee_Raise', note: 'La imagen agrega elevar la rodilla; tú solo subes y bajas del escalón.' },
+  'puente-una-pierna': { folder: 'Single_Leg_Glute_Bridge' },
+  'rdl-una-pierna': {
+    folder: 'Kettlebell_One-Legged_Deadlift',
+    note: 'La imagen usa una pesa rusa; tú lo haces sin peso y con una mano en la pared.',
+  },
+}

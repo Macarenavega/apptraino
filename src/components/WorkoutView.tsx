@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { SESSIONS, WARMUP, formatTarget, resolveExercises, type Approvals } from '../data/routine'
 import type { ExerciseLog, WorkoutLog } from '../lib/store'
+import { ExerciseImages } from './ExerciseImages'
 import type { Timer } from '../lib/timer'
 
 type Props = {
@@ -131,6 +132,7 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
               {ex.rest > 0 && ` · descanso ${ex.rest}"`}
             </p>
             {meta?.note && <p className="mt-1 text-sm text-muted italic">{meta.note}</p>}
+            <ExerciseImages exerciseId={ex.exerciseId} />
 
             {meta?.levelHint && (
               <label className="mt-3 block">
