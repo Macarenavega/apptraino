@@ -11,7 +11,7 @@ Se instala en el celular como una app (PWA) y guarda todo en el propio dispositi
 - **Modo entrenamiento**: calentamiento, series con repeticiones/segundos/minutos, nivel de cada ejercicio (altura del apoyo, tensión de banda, asistencia) y notas.
 - **Temporizadores**: descanso automático al marcar una serie, y cuenta regresiva para plancha y caminata.
 - **Fases**: la Fase 2 se desbloquea tras 4 semanas de Fase 1 y una revisión de criterios.
-- **Imágenes de referencia** (posición inicial y final) para la mayoría de los ejercicios, con aclaraciones cuando la imagen no es exactamente tu variante.
+- **Cómo se hace**: cada ejercicio trae una explicación breve paso a paso, imágenes de referencia (posición inicial y final) cuando hay, y un link para buscar videos en YouTube.
 - **Historial** de entrenamientos y respaldo/restauración de datos.
 
 ## Desarrollo
