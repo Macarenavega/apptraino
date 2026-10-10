@@ -2,12 +2,17 @@ import { useState } from 'react'
 import {
   CAUTIONS,
   DAY_NAMES,
+  DAY_SHORT,
   PHASE1_DAYS,
   PHASE2_CRITERIA,
-  SCHEDULE,
+  PHASE_ORDER,
   SESSIONS,
+  coreExerciseFor,
   formatTarget,
+  missingSessions,
+  planWeek,
   resolveExercises,
+  weekKey,
   type CautionId,
   type SessionId,
 } from '../data/routine'
@@ -19,19 +24,24 @@ type Props = {
   onResume: () => void
   onPhase2: () => void
   onOpenSettings: () => void
+  /** Guarda los días elegidos de una semana (undefined = volver al plan por defecto) */
+  onWeekPlan: (key: string, days: number[] | undefined) => void
 }
 
-export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings }: Props) {
+export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, onWeekPlan }: Props) {
   const [now] = useState(() => new Date())
   const today = now.getDay()
-  const plan = SCHEDULE[state.phase][today]
+  const plan = planWeek(state.phase, state.weekPlans[weekKey(now)])[today]
   const [picked, setPicked] = useState<SessionId | undefined>(plan.session)
   const sessionId = picked ?? plan.session
   const pending = (Object.keys(CAUTIONS) as CautionId[]).filter((c) => !state.approvals[c])
   const doneToday = state.history.some(
     (w) => w.sessionId === sessionId && new Date(w.startedAt).toDateString() === now.toDateString(),
   )
-  const sessionsInPhase = [...new Set(SCHEDULE[state.phase].flatMap((d) => (d.session ? [d.session] : [])))]
+  const sessionsInPhase = PHASE_ORDER[state.phase]
+  const coreDone = state.history.some(
+    (w) => w.sessionId === 'core' && new Date(w.startedAt).toDateString() === now.toDateString(),
+  )
 
   return (
     <div className="space-y-4">
@@ -80,6 +90,8 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings }
         </section>
       )}
 
+      {!state.active && <CoreCard now={now} done={coreDone} onStart={() => onStart('core')} />}
+
       {!state.active && (
         <section>
           <h3 className="mb-2 text-sm font-semibold text-muted">Hacer otra sesión</h3>
@@ -97,7 +109,7 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings }
         </section>
       )}
 
-      <WeekPlan phase={state.phase} today={today} />
+      <WeekPlanner state={state} now={now} onWeekPlan={onWeekPlan} />
       <PhaseCard state={state} onPhase2={onPhase2} />
     </div>
   )
@@ -148,14 +160,116 @@ function SessionCard({
   )
 }
 
-function WeekPlan({ phase, today }: { phase: 1 | 2; today: number }) {
-  const order = [1, 2, 3, 4, 5, 6, 0]
+function CoreCard({ now, done, onStart }: { now: Date; done: boolean; onStart: () => void }) {
+  const ex = coreExerciseFor(now)
   return (
     <section className="card">
-      <h3 className="font-semibold">Semana (Fase {phase})</h3>
-      <ul className="mt-2 space-y-1 text-sm">
-        {order.map((d) => {
-          const p = SCHEDULE[phase][d]
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm text-muted">Core diario · ~5'</p>
+          <h2 className="font-semibold leading-snug">
+            {ex.name} {done && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
+          </h2>
+          <p className="text-sm text-muted tabular-nums">{formatTarget(ex.target, ex.sets)}</p>
+        </div>
+        <button className={done ? 'btn-ghost shrink-0' : 'btn-primary shrink-0'} onClick={onStart}>
+          {done ? 'Repetir' : 'Hacer'}
+        </button>
+      </div>
+      <p className="mt-2 text-xs text-muted">Todos los días, también los de descanso. Cambia de ejercicio cada día.</p>
+    </section>
+  )
+}
+
+const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0]
+const dateFmt = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'short' })
+
+function WeekPlanner({
+  state,
+  now,
+  onWeekPlan,
+}: {
+  state: AppState
+  now: Date
+  onWeekPlan: (key: string, days: number[] | undefined) => void
+}) {
+  const [offset, setOffset] = useState(0)
+  const [editing, setEditing] = useState(false)
+  const ref = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset * 7)
+  const key = weekKey(ref)
+  const chosen = state.weekPlans[key]
+  const plan = planWeek(state.phase, chosen)
+  const days = chosen ?? WEEK_ORDER.filter((d) => plan[d].session)
+  const missing = missingSessions(state.phase, chosen)
+  const monday = new Date(`${key}T00:00:00`)
+  const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6)
+  const today = offset === 0 ? now.getDay() : -1
+
+  const toggle = (d: number) => {
+    const next = days.includes(d) ? days.filter((x) => x !== d) : [...days, d]
+    onWeekPlan(key, next)
+  }
+
+  return (
+    <section className="card">
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="font-semibold">Semana (Fase {state.phase})</h3>
+        <button className="text-sm font-medium text-emerald-700 dark:text-emerald-400" onClick={() => setEditing((v) => !v)}>
+          {editing ? 'Listo' : 'Elegir días'}
+        </button>
+      </div>
+      <div className="mt-2 flex gap-2">
+        {['Esta semana', 'Próxima semana'].map((label, i) => (
+          <button key={label} className={`chip ${offset === i ? 'chip-active' : ''}`} onClick={() => setOffset(i)}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-xs text-muted">
+        {dateFmt.format(monday)} – {dateFmt.format(sunday)}
+        {chosen ? ' · días elegidos por ti' : ' · plan por defecto'}
+      </p>
+
+      {editing && (
+        <div className="mt-3 rounded-xl border border-line bg-page p-3">
+          <p className="text-sm font-medium">¿Qué días entrenas?</p>
+          <div className="mt-2 flex justify-between gap-1">
+            {WEEK_ORDER.map((d) => (
+              <button
+                key={d}
+                aria-label={DAY_NAMES[d]}
+                aria-pressed={days.includes(d)}
+                className={`size-10 rounded-full border text-sm font-semibold ${
+                  days.includes(d) ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-line bg-surface'
+                }`}
+                onClick={() => toggle(d)}
+              >
+                {DAY_SHORT[d]}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted">
+            Las sesiones se reparten en orden ({PHASE_ORDER[state.phase].map((id) => SESSIONS[id].name).join(', ')}),
+            alternando tren superior e inferior.
+          </p>
+          {chosen && (
+            <button className="mt-2 text-xs underline" onClick={() => onWeekPlan(key, undefined)}>
+              Volver al plan por defecto
+            </button>
+          )}
+        </div>
+      )}
+
+      {missing.length > 0 && (
+        <p className="mt-3 rounded-lg bg-amber-50 p-2 text-sm dark:bg-amber-950/40">
+          ⚠️ Con {days.length} {days.length === 1 ? 'día' : 'días'} quedan fuera:{' '}
+          {missing.map((id) => SESSIONS[id].name).join(', ')}.
+        </p>
+      )}
+
+      <ul className="mt-3 space-y-1 text-sm">
+        {WEEK_ORDER.map((d) => {
+          const p = plan[d]
           return (
             <li key={d} className={`flex justify-between gap-3 ${d === today ? 'font-semibold' : ''}`}>
               <span className="w-24 shrink-0">{DAY_NAMES[d]}</span>

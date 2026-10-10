@@ -35,7 +35,7 @@ export type Alternative = {
   perSide?: boolean
 }
 
-export type SessionId = 'supA' | 'infA' | 'supB' | 'infB' | 'full' | 'mov'
+export type SessionId = 'supA' | 'infA' | 'supB' | 'infB' | 'full' | 'mov' | 'core'
 
 export type Session = {
   id: SessionId
@@ -77,7 +77,67 @@ const walking = (id: string, min: number, max: number, note?: string): Exercise 
   note: note ?? 'Intensidad moderada: poder hablar mientras se hace',
 })
 
+/**
+ * Core diario: un ejercicio por día, rotando. Todos sin flexión de cuello ni carga
+ * lumbar (nada de abdominales tipo crunch) por la protrusión cervical y el sacro.
+ */
+export const CORE_EXERCISES: Exercise[] = [
+  {
+    id: 'core-bird-dog',
+    name: 'Bird dog (cuadrupedia, brazo y pierna contrarios)',
+    sets: 2,
+    target: { kind: 'reps', min: 8, max: 8, perSide: true },
+    rest: 30,
+    note: 'Lento y controlado: espalda quieta como una mesa',
+  },
+  {
+    id: 'core-dead-bug',
+    name: 'Dead bug',
+    sets: 2,
+    target: { kind: 'reps', min: 8, max: 8, perSide: true },
+    rest: 30,
+    note: 'Espalda baja pegada al suelo todo el tiempo',
+  },
+  {
+    id: 'core-plancha-rodillas',
+    name: 'Plancha con rodillas apoyadas',
+    sets: 3,
+    target: { kind: 'seconds', min: 20, max: 30 },
+    rest: 30,
+    note: 'Mirada al suelo, cuello neutro',
+  },
+  {
+    id: 'core-plancha-lateral',
+    name: 'Plancha lateral con rodillas apoyadas',
+    sets: 2,
+    target: { kind: 'seconds', min: 15, max: 20 },
+    rest: 30,
+    note: 'Haz un lado y luego el otro en cada serie',
+    levelHint: 'Variante (ej: rodillas, pies)',
+  },
+  {
+    id: 'core-transverso',
+    name: 'Activación de transverso tumbada (vacío abdominal)',
+    sets: 3,
+    target: { kind: 'reps', min: 10, max: 10 },
+    rest: 20,
+    note: 'Cada repetición es una respiración: suelta el aire y mete el ombligo hacia adentro 3-5"',
+  },
+]
+
+/** Ejercicio de core que toca un día dado (rota cada día) */
+export function coreExerciseFor(date: Date) {
+  const day = Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000)
+  return CORE_EXERCISES[day % CORE_EXERCISES.length]
+}
+
 export const SESSIONS: Record<SessionId, Session> = {
+  core: {
+    id: 'core',
+    name: 'Core diario',
+    estimate: '~5\'',
+    exercises: CORE_EXERCISES,
+  },
   supA: {
     id: 'supA',
     name: 'Tren Superior A',
@@ -360,6 +420,42 @@ export const SCHEDULE: Record<1 | 2, DayPlan[]> = {
 }
 
 export const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+export const DAY_SHORT = ['D', 'L', 'M', 'X', 'J', 'V', 'S']
+
+/** Orden de las sesiones de cada fase cuando el usuario elige sus días */
+export const PHASE_ORDER: Record<1 | 2, SessionId[]> = {
+  1: ['supA', 'infA', 'supB', 'infB'],
+  2: ['supA', 'infA', 'supB', 'infB', 'full', 'mov'],
+}
+
+const REST_CUSTOM = 'Descanso o caminata ligera opcional'
+
+/** Lunes de la semana de una fecha, como 'AAAA-MM-DD' (clave del plan semanal) */
+export function weekKey(date: Date) {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+/**
+ * Plan de la semana: con los días elegidos asigna las sesiones de la fase en orden
+ * (Superior A, Inferior A, Superior B, Inferior B…). Sin días elegidos usa el plan por defecto.
+ */
+export function planWeek(phase: 1 | 2, days?: number[]): DayPlan[] {
+  if (!days) return SCHEDULE[phase]
+  const plan: DayPlan[] = Array.from({ length: 7 }, () => ({ restLabel: REST_CUSTOM }))
+  const order = PHASE_ORDER[phase]
+  // La semana empieza el lunes: L M X J V S D
+  const sorted = [...days].sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7))
+  sorted.slice(0, order.length).forEach((d, i) => (plan[d] = { session: order[i] }))
+  return plan
+}
+
+/** Sesiones de la fase que no entran en los días elegidos */
+export function missingSessions(phase: 1 | 2, days?: number[]) {
+  if (!days) return []
+  return PHASE_ORDER[phase].slice(days.length)
+}
 
 export const PHASE2_CRITERIA = [
   'Terminé las 4 semanas de Fase 1 sin dolor articular',
@@ -578,6 +674,16 @@ export const EXERCISE_IMAGES: Record<string, ExerciseImage> = {
   'alt-goblet': { folder: 'Goblet_Squat' },
   'alt-cinta': { folder: 'Walking_Treadmill' },
   'alt-bici': { folder: 'Bicycling_Stationary' },
+  'core-dead-bug': { folder: 'Dead_Bug' },
+  'core-plancha-rodillas': {
+    folder: 'Plank',
+    note: 'La imagen muestra la plancha completa; tú apoyas las rodillas.',
+  },
+  'core-plancha-lateral': {
+    folder: 'Side_Bridge',
+    note: 'La imagen apoya los pies; tú empieza con las rodillas dobladas y apoyadas.',
+  },
+  'core-transverso': { folder: 'Stomach_Vacuum', note: 'La imagen es de pie; tú hazlo tumbada boca arriba con las rodillas dobladas.' },
   'rdl-una-pierna': {
     folder: 'Kettlebell_One-Legged_Deadlift',
     note: 'La imagen usa una pesa rusa; tú lo haces sin peso y con una mano en la pared.',

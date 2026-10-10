@@ -7,6 +7,8 @@ Se instala en el celular como una app (PWA) y guarda todo en el propio dispositi
 ## Qué hace
 
 - **Hoy**: muestra la sesión que toca según el día y la fase (Superior A/B, Inferior A/B, Full body, Movilidad).
+- **Elegir días**: en la tarjeta "Semana" se eligen los días de entrenamiento de esta semana o la próxima; las sesiones se reparten en orden alternando tren superior e inferior.
+- **Core diario**: un ejercicio corto de core cada día (también en descanso), rotando entre opciones seguras para lumbar y cuello.
 - **Ejercicios con ⚠️** (Superman, Pike push up, Peso muerto rumano a una pierna) vienen **desactivados** hasta que un profesional los apruebe. Mientras tanto, el Pike push up se reemplaza por press de hombro con banda.
 - **Cambiar ejercicio**: si no tienes el material (por ejemplo bandas en el gimnasio), cada ejercicio con alternativas tiene un botón "⇄ Cambiar". La elección se recuerda y se puede deshacer en Ajustes.
 - **Modo entrenamiento**: calentamiento, series con repeticiones/segundos/minutos, nivel de cada ejercicio (altura del apoyo, tensión de banda, asistencia) y notas.

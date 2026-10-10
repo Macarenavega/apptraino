@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
   SESSIONS,
+  coreExerciseFor,
   resolveExercises,
   type Approvals,
   type Exercise,
@@ -42,6 +43,8 @@ export type AppState = {
   lastLevels: Record<string, string>
   /** Ejercicios reemplazados por falta de material (grupo → alternativa) */
   swaps: Swaps
+  /** Días de entrenamiento elegidos por semana (clave: lunes AAAA-MM-DD; 0 = domingo … 6 = sábado) */
+  weekPlans: Record<string, number[]>
   history: WorkoutLog[]
   active?: WorkoutLog
 }
@@ -54,6 +57,7 @@ const initialState: AppState = {
   approvals: { superman: false, pike: false, rdl: false },
   lastLevels: {},
   swaps: {},
+  weekPlans: {},
   history: [],
 }
 
@@ -85,7 +89,11 @@ export function useAppState() {
 
 export function newWorkout(state: AppState, sessionId: SessionId, warmupItems: number): WorkoutLog {
   const session = SESSIONS[sessionId]
-  const { active } = resolveExercises(session, state.approvals, state.swaps)
+  // El core diario es un solo ejercicio que rota cada día
+  const active =
+    sessionId === 'core'
+      ? [coreExerciseFor(new Date())]
+      : resolveExercises(session, state.approvals, state.swaps).active
   return {
     id: crypto.randomUUID?.() ?? String(Date.now()),
     sessionId,

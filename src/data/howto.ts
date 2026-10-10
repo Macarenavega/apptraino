@@ -309,6 +309,48 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'elíptica cómo usarla principiantes',
   },
+  'core-bird-dog': {
+    steps: [
+      'En cuadrupedia: manos bajo los hombros, rodillas bajo la cadera, espalda plana.',
+      'Estira a la vez un brazo hacia adelante y la pierna contraria hacia atrás, a la altura del cuerpo.',
+      'Mantén 2 segundos sin que la cadera gire ni la espalda se hunda, y vuelve. Alterna lados.',
+      'Mirada al suelo, cuello alineado con la espalda.',
+    ],
+    video: 'bird dog ejercicio core técnica principiantes',
+  },
+  'core-dead-bug': {
+    steps: [
+      'Boca arriba, brazos estirados hacia el techo y rodillas dobladas a 90° en el aire.',
+      'Pega la espalda baja al suelo y mantenla así todo el ejercicio.',
+      'Estira un brazo hacia atrás y la pierna contraria hacia adelante, despacio, y vuelve. Alterna lados.',
+      'La cabeza queda apoyada en el suelo.',
+    ],
+    video: 'dead bug ejercicio core principiantes',
+  },
+  'core-plancha-rodillas': {
+    steps: [
+      'Apoya antebrazos (codos bajo los hombros) y rodillas en el suelo.',
+      'Lleva las caderas hasta que rodillas, cadera y hombros queden en línea.',
+      'Aprieta abdomen y glúteos, sin dejar caer la cadera. Respira normal.',
+    ],
+    video: 'plancha con rodillas apoyadas principiantes',
+  },
+  'core-plancha-lateral': {
+    steps: [
+      'De lado, apoya el antebrazo con el codo bajo el hombro y las rodillas dobladas una sobre otra.',
+      'Sube la cadera hasta que rodillas, cadera y hombros queden en línea.',
+      'Mantén el tiempo indicado y cambia de lado. Cabeza alineada, sin dejarla caer.',
+    ],
+    video: 'plancha lateral con rodillas apoyadas principiantes',
+  },
+  'core-transverso': {
+    steps: [
+      'Boca arriba con las rodillas dobladas y los pies apoyados. Manos sobre el abdomen bajo.',
+      'Toma aire por la nariz y, al soltarlo, mete el ombligo hacia adentro como cerrando un cinturón.',
+      'Mantén 3-5 segundos respirando suave, sin mover la espalda ni la pelvis, y relaja.',
+    ],
+    video: 'activación del transverso abdominal acostado',
+  },
   'movilidad-general': {
     steps: [
       'Tobillos: círculos y llevar la rodilla hacia adelante con el pie apoyado.',

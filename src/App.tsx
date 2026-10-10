@@ -52,7 +52,8 @@ export default function App() {
                   active: undefined,
                   history: [...s.history, finished],
                   lastLevels,
-                  startDate: s.startDate ?? finished.startedAt,
+                  // El core diario no cuenta para el inicio de la Fase 1
+                  startDate: s.startDate ?? (finished.sessionId === 'core' ? undefined : finished.startedAt),
                 }
               })
               setInWorkout(false)
@@ -63,12 +64,20 @@ export default function App() {
             state={state}
             onStart={(id) => {
               unlockAudio()
-              update((s) => ({ ...s, active: newWorkout(s, id, WARMUP.length) }))
+              update((s) => ({ ...s, active: newWorkout(s, id, id === 'core' ? 0 : WARMUP.length) }))
               setInWorkout(true)
             }}
             onResume={() => setInWorkout(true)}
             onPhase2={() => update((s) => ({ ...s, phase: 2 }))}
             onOpenSettings={() => setTab('settings')}
+            onWeekPlan={(key, days) =>
+              update((s) => {
+                const weekPlans = { ...s.weekPlans }
+                if (days) weekPlans[key] = days
+                else delete weekPlans[key]
+                return { ...s, weekPlans }
+              })
+            }
           />
         ) : tab === 'history' ? (
           <HistoryView

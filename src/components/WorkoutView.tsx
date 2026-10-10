@@ -90,6 +90,7 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
         <div className="h-full bg-emerald-500 transition-[width]" style={{ width: `${(doneSets / totalSets) * 100}%` }} />
       </div>
 
+      {workout.warmup.length > 0 && (
       <section className="card">
         <button className="flex w-full items-center justify-between" onClick={() => setShowWarmup((v) => !v)}>
           <span className="font-semibold">
@@ -117,6 +118,7 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
           </ul>
         )}
       </section>
+      )}
 
       {workout.exercises.map((ex, ei) => {
         const found = findSlot(session, approvals, ex.exerciseId)
