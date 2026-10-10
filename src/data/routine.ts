@@ -22,6 +22,17 @@ export type Exercise = {
   caution?: CautionId
   /** Qué se hace en su lugar mientras no está aprobado */
   replacement?: Exercise
+  /** Nombre del ejercicio original cuando este es un reemplazo elegido */
+  swappedFrom?: string
+}
+
+/** Ejercicio equivalente para cuando no se tiene el material (hereda series, reps y descanso) */
+export type Alternative = {
+  id: string
+  name: string
+  note?: string
+  levelHint?: string
+  perSide?: boolean
 }
 
 export type SessionId = 'supA' | 'infA' | 'supB' | 'infB' | 'full' | 'mov'
@@ -360,19 +371,149 @@ export const PHASE1_DAYS = 28
 
 export type Approvals = Record<CautionId, boolean>
 
-/** Ejercicios a realizar según lo aprobado por el profesional */
-export function resolveExercises(session: Session, approvals: Approvals) {
+const KG_HINT = 'Peso (kg)'
+
+const ALT = {
+  remoMancuerna: {
+    id: 'alt-remo-mancuerna',
+    name: 'Remo con mancuerna a una mano (apoyo en banco)',
+    perSide: true,
+    levelHint: KG_HINT,
+  },
+  remoPolea: { id: 'alt-remo-polea', name: 'Remo sentado en polea baja', levelHint: KG_HINT },
+  remoPoleaAncho: {
+    id: 'alt-remo-polea-ancho',
+    name: 'Remo sentado en polea baja con barra (agarre ancho)',
+    levelHint: KG_HINT,
+  },
+  pressMancuernas: {
+    id: 'alt-press-hombro-mancuernas',
+    name: 'Press de hombro con mancuernas sentada (con respaldo)',
+    note: 'El respaldo protege la zona lumbar',
+    levelHint: KG_HINT,
+  },
+  pressMaquina: { id: 'alt-press-hombro-maquina', name: 'Press de hombro en máquina', levelHint: KG_HINT },
+  curlSentado: { id: 'alt-curl-femoral-sentado', name: 'Curl femoral sentada en máquina', levelHint: KG_HINT },
+  curlTumbado: {
+    id: 'alt-curl-femoral-tumbado',
+    name: 'Curl femoral tumbada en máquina',
+    note: 'Cadera pegada al banco, sin arquear la espalda baja',
+    levelHint: KG_HINT,
+  },
+  tricepsPolea: { id: 'alt-triceps-polea', name: 'Extensión de tríceps en polea alta', levelHint: KG_HINT },
+  tricepsTumbada: {
+    id: 'alt-triceps-mancuerna',
+    name: 'Extensión de tríceps con mancuernas tumbada en banco',
+    note: 'La cabeza queda apoyada: cuida el cuello',
+    levelHint: KG_HINT,
+  },
+  goblet: {
+    id: 'alt-goblet',
+    name: 'Sentadilla goblet (mancuerna o kettlebell al pecho)',
+    levelHint: KG_HINT,
+  },
+  cinta: { id: 'alt-cinta', name: 'Caminata en cinta' },
+  bici: { id: 'alt-bici', name: 'Bicicleta estática' },
+  eliptica: { id: 'alt-eliptica', name: 'Elíptica' },
+} satisfies Record<string, Alternative>
+
+const remoOptions = [ALT.remoMancuerna, ALT.remoPolea]
+const pressOptions = [ALT.pressMancuernas, ALT.pressMaquina]
+const cardioOptions = [ALT.cinta, ALT.bici, ALT.eliptica]
+
+/**
+ * Alternativas por ejercicio. Los ejercicios del mismo grupo comparten la elección:
+ * si cambias el remo con banda por el de mancuerna, se cambia en todas las sesiones.
+ */
+const ALTERNATIVES: Record<string, { group: string; options: Alternative[] }> = {
+  'remo-banda': { group: 'remo-banda', options: remoOptions },
+  'full-remo-banda': { group: 'remo-banda', options: remoOptions },
+  'remo-banda-ancho': { group: 'remo-banda-ancho', options: [ALT.remoPoleaAncho, ALT.remoMancuerna] },
+  'press-hombro-banda': { group: 'press-hombro-banda', options: pressOptions },
+  'press-hombro-banda-extra': { group: 'press-hombro-banda', options: pressOptions },
+  'curl-femoral-banda': { group: 'curl-femoral-banda', options: [ALT.curlSentado, ALT.curlTumbado] },
+  'triceps-banda': { group: 'triceps-banda', options: [ALT.tricepsPolea, ALT.tricepsTumbada] },
+  'sentadilla-peso': { group: 'sentadilla-peso', options: [ALT.goblet] },
+  'caminata-a': { group: 'caminata', options: cardioOptions },
+  'caminata-b': { group: 'caminata', options: cardioOptions },
+  'full-caminata': { group: 'caminata', options: cardioOptions },
+  'mov-caminata': { group: 'caminata', options: cardioOptions },
+}
+
+/** Elección del usuario por grupo: id de la alternativa */
+export type Swaps = Record<string, string>
+
+function toExercise(slot: Exercise, alt: Alternative): Exercise {
+  const target = alt.perSide && slot.target.kind === 'reps' ? { ...slot.target, perSide: true } : slot.target
+  return {
+    ...slot,
+    id: alt.id,
+    name: alt.name,
+    note: alt.note,
+    levelHint: alt.levelHint,
+    target,
+    caution: undefined,
+    replacement: undefined,
+    swappedFrom: slot.name,
+  }
+}
+
+/** Opciones para un ejercicio: el original primero y luego sus alternativas */
+export function swapOptions(slot: Exercise) {
+  const entry = ALTERNATIVES[slot.id]
+  if (!entry) return undefined
+  return { group: entry.group, options: [slot, ...entry.options.map((a) => toExercise(slot, a))] }
+}
+
+function applySwap(slot: Exercise, swaps: Swaps) {
+  const sw = swapOptions(slot)
+  const chosen = sw && swaps[sw.group]
+  return (chosen && sw.options.find((o) => o.id === chosen)) || slot
+}
+
+/** Ejercicios a realizar según lo aprobado por el profesional y los reemplazos elegidos */
+export function resolveExercises(session: Session, approvals: Approvals, swaps: Swaps = {}) {
   const active: Exercise[] = []
   const blocked: Exercise[] = []
+  const slots: Exercise[] = []
   for (const ex of session.exercises) {
     if (ex.caution && !approvals[ex.caution]) {
       blocked.push(ex)
-      if (ex.replacement) active.push(ex.replacement)
+      if (ex.replacement) slots.push(ex.replacement)
     } else {
-      active.push(ex)
+      slots.push(ex)
     }
   }
-  return { active, blocked }
+  for (const slot of slots) active.push(applySwap(slot, swaps))
+  return { active, blocked, slots }
+}
+
+/** Busca el ejercicio original (y sus opciones) del que salió un ejercicio de la sesión */
+export function findSlot(session: Session, approvals: Approvals, exerciseId: string) {
+  for (const slot of resolveExercises(session, approvals).slots) {
+    const sw = swapOptions(slot)
+    if (slot.id === exerciseId) return { slot, exercise: slot, swap: sw }
+    const exercise = sw?.options.find((o) => o.id === exerciseId)
+    if (exercise) return { slot, exercise, swap: sw }
+  }
+  return undefined
+}
+
+/** Nombre legible de la alternativa elegida para un grupo */
+export function alternativeName(id: string) {
+  return Object.values(ALT).find((a) => a.id === id)?.name
+}
+
+/** Nombre del ejercicio original de un grupo */
+export function groupName(group: string) {
+  const slotId = Object.entries(ALTERNATIVES).find(([, v]) => v.group === group)?.[0]
+  for (const session of Object.values(SESSIONS)) {
+    for (const ex of session.exercises) {
+      if (ex.id === slotId) return ex.name
+      if (ex.replacement && ex.replacement.id === slotId) return ex.replacement.name
+    }
+  }
+  return group
 }
 
 export function formatTarget(t: Target, sets: number) {
@@ -425,6 +566,18 @@ export const EXERCISE_IMAGES: Record<string, ExerciseImage> = {
   'triceps-banda': { folder: 'Speed_Band_Overhead_Triceps', note: 'Una variante posible: extensión por encima de la cabeza.' },
   'step-up': { folder: 'Step-up_with_Knee_Raise', note: 'La imagen agrega elevar la rodilla; tú solo subes y bajas del escalón.' },
   'puente-una-pierna': { folder: 'Single_Leg_Glute_Bridge' },
+  'alt-remo-mancuerna': { folder: 'One-Arm_Dumbbell_Row' },
+  'alt-remo-polea': { folder: 'Seated_Cable_Rows' },
+  'alt-remo-polea-ancho': { folder: 'Seated_Cable_Rows', note: 'La imagen usa un agarre cerrado; tú usa una barra con las manos más abiertas.' },
+  'alt-press-hombro-mancuernas': { folder: 'Dumbbell_Shoulder_Press' },
+  'alt-press-hombro-maquina': { folder: 'Machine_Shoulder_Military_Press' },
+  'alt-curl-femoral-sentado': { folder: 'Seated_Leg_Curl' },
+  'alt-curl-femoral-tumbado': { folder: 'Lying_Leg_Curls' },
+  'alt-triceps-polea': { folder: 'Triceps_Pushdown' },
+  'alt-triceps-mancuerna': { folder: 'Lying_Dumbbell_Tricep_Extension' },
+  'alt-goblet': { folder: 'Goblet_Squat' },
+  'alt-cinta': { folder: 'Walking_Treadmill' },
+  'alt-bici': { folder: 'Bicycling_Stationary' },
   'rdl-una-pierna': {
     folder: 'Kettlebell_One-Legged_Deadlift',
     note: 'La imagen usa una pesa rusa; tú lo haces sin peso y con una mano en la pared.',

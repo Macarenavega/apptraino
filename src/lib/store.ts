@@ -3,6 +3,8 @@ import {
   SESSIONS,
   resolveExercises,
   type Approvals,
+  type Exercise,
+  type Swaps,
   type SessionId,
   type Target,
 } from '../data/routine'
@@ -38,6 +40,8 @@ export type AppState = {
   approvals: Approvals
   /** Último nivel anotado por ejercicio */
   lastLevels: Record<string, string>
+  /** Ejercicios reemplazados por falta de material (grupo → alternativa) */
+  swaps: Swaps
   history: WorkoutLog[]
   active?: WorkoutLog
 }
@@ -49,6 +53,7 @@ const initialState: AppState = {
   phase: 1,
   approvals: { superman: false, pike: false, rdl: false },
   lastLevels: {},
+  swaps: {},
   history: [],
 }
 
@@ -80,7 +85,7 @@ export function useAppState() {
 
 export function newWorkout(state: AppState, sessionId: SessionId, warmupItems: number): WorkoutLog {
   const session = SESSIONS[sessionId]
-  const { active } = resolveExercises(session, state.approvals)
+  const { active } = resolveExercises(session, state.approvals, state.swaps)
   return {
     id: crypto.randomUUID?.() ?? String(Date.now()),
     sessionId,
@@ -88,15 +93,19 @@ export function newWorkout(state: AppState, sessionId: SessionId, warmupItems: n
     phase: state.phase,
     startedAt: new Date().toISOString(),
     warmup: Array(warmupItems).fill(false),
-    exercises: active.map((ex) => ({
-      exerciseId: ex.id,
-      name: ex.name,
-      target: ex.target,
-      rest: ex.rest,
-      level: state.lastLevels[ex.id] ?? '',
-      notes: '',
-      sets: Array.from({ length: ex.sets }, () => ({ value: null, done: false })),
-    })),
+    exercises: active.map((ex) => exerciseLog(ex, state.lastLevels)),
+  }
+}
+
+export function exerciseLog(ex: Exercise, lastLevels: Record<string, string>): ExerciseLog {
+  return {
+    exerciseId: ex.id,
+    name: ex.name,
+    target: ex.target,
+    rest: ex.rest,
+    level: lastLevels[ex.id] ?? '',
+    notes: '',
+    sets: Array.from({ length: ex.sets }, () => ({ value: null, done: false })),
   }
 }
 

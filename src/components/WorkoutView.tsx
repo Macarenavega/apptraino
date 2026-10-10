@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SESSIONS, WARMUP, formatTarget, resolveExercises, type Approvals } from '../data/routine'
+import { SESSIONS, WARMUP, findSlot, formatTarget, resolveExercises, type Approvals, type Exercise } from '../data/routine'
 import type { ExerciseLog, WorkoutLog } from '../lib/store'
 import { ExerciseGuide } from './ExerciseGuide'
 import type { Timer } from '../lib/timer'
@@ -11,18 +11,18 @@ type Props = {
   onChange: (fn: (w: WorkoutLog) => WorkoutLog) => void
   onFinish: () => void
   onDiscard: () => void
+  /** Cambia el ejercicio de la posición indicada por otra opción de su grupo */
+  onSwap: (index: number, exercise: Exercise, group: string) => void
 }
 
-export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onDiscard }: Props) {
+export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onDiscard, onSwap }: Props) {
   const session = SESSIONS[workout.sessionId]
   const { blocked } = resolveExercises(session, approvals)
-  const notes = new Map(
-    session.exercises.flatMap((ex) => [ex, ...(ex.replacement ? [ex.replacement] : [])]).map((ex) => [ex.id, ex]),
-  )
   const totalSets = workout.exercises.reduce((n, e) => n + e.sets.length, 0)
   const doneSets = workout.exercises.reduce((n, e) => n + e.sets.filter((s) => s.done).length, 0)
   const warmupDone = workout.warmup.every(Boolean)
   const [showWarmup, setShowWarmup] = useState(!warmupDone)
+  const [swapping, setSwapping] = useState<number | null>(null)
 
   const updateExercise = (i: number, fn: (e: ExerciseLog) => ExerciseLog) =>
     onChange((w) => ({ ...w, exercises: w.exercises.map((e, j) => (j === i ? fn(e) : e)) }))
@@ -119,14 +119,60 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
       </section>
 
       {workout.exercises.map((ex, ei) => {
-        const meta = notes.get(ex.exerciseId)
+        const found = findSlot(session, approvals, ex.exerciseId)
+        const meta = found?.exercise
+        const swap = found?.swap
         const allDone = ex.sets.every((s) => s.done)
         return (
           <section key={ex.exerciseId} className={`card ${allDone ? 'opacity-70' : ''}`}>
             <div className="flex items-start justify-between gap-2">
               <h2 className="font-semibold leading-snug">{ex.name}</h2>
-              {allDone && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
+              {allDone ? (
+                <span className="text-emerald-600 dark:text-emerald-400">✓</span>
+              ) : (
+                swap && (
+                  <button
+                    className="shrink-0 rounded-lg border border-line px-2 py-1 text-xs font-medium"
+                    onClick={() => setSwapping(swapping === ei ? null : ei)}
+                    aria-expanded={swapping === ei}
+                  >
+                    ⇄ Cambiar
+                  </button>
+                )
+              )}
             </div>
+            {meta?.swappedFrom && <p className="text-xs text-muted">En lugar de: {meta.swappedFrom}</p>}
+            {swap && swapping === ei && (
+              <div className="mt-3 rounded-xl border border-line bg-page p-3">
+                <p className="text-sm font-medium">¿No tienes el material? Elige otra opción:</p>
+                <ul className="mt-2 space-y-2">
+                  {swap.options.map((opt, oi) => {
+                    const current = opt.id === ex.exerciseId
+                    return (
+                      <li key={opt.id}>
+                        <button
+                          className={`w-full rounded-lg border px-3 py-2 text-left text-sm ${
+                            current ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40' : 'border-line bg-surface'
+                          }`}
+                          disabled={current}
+                          onClick={() => {
+                            if (ex.sets.some((s) => s.done) && !confirm('Ya marcaste series de este ejercicio. ¿Cambiarlo igual?'))
+                              return
+                            onSwap(ei, opt, swap.group)
+                            setSwapping(null)
+                          }}
+                        >
+                          {opt.name}
+                          {oi === 0 && <span className="text-muted"> (original)</span>}
+                          {current && <span className="text-emerald-700 dark:text-emerald-400"> · actual</span>}
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+                <p className="mt-2 text-xs text-muted">La app recordará tu elección para las próximas sesiones.</p>
+              </div>
+            )}
             <p className="mt-1 text-sm text-muted">
               {formatTarget(ex.target, ex.sets.length)}
               {ex.rest > 0 && ` · descanso ${ex.rest}"`}

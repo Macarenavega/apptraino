@@ -204,6 +204,111 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'puente de glúteo a una pierna técnica',
   },
+  'alt-remo-mancuerna': {
+    steps: [
+      'Apoya una rodilla y la mano del mismo lado en un banco, espalda plana y paralela al suelo.',
+      'Con la otra mano tira de la mancuerna hacia la cadera, codo pegado al cuerpo.',
+      'Aprieta el omóplato 1 segundo y baja despacio. Todas las reps y cambia de lado.',
+    ],
+    video: 'remo con mancuerna a una mano apoyo en banco técnica',
+  },
+  'alt-remo-polea': {
+    steps: [
+      'Sentada en la máquina de polea baja, pies apoyados y rodillas un poco flexionadas.',
+      'Espalda recta (sin echarte atrás); tira del agarre hacia el abdomen llevando los codos atrás.',
+      'Aprieta los omóplatos y vuelve despacio estirando los brazos sin encorvarte.',
+    ],
+    video: 'remo sentado en polea baja técnica principiantes',
+  },
+  'alt-remo-polea-ancho': {
+    steps: [
+      'Sentada en la polea baja con una barra recta, manos más abiertas que los hombros.',
+      'Espalda recta; tira de la barra hacia la parte baja del pecho llevando los codos hacia afuera y atrás.',
+      'Aprieta los omóplatos y vuelve despacio.',
+    ],
+    video: 'remo en polea baja agarre ancho técnica',
+  },
+  'alt-press-hombro-mancuernas': {
+    steps: [
+      'Sentada en un banco con respaldo vertical, espalda apoyada completa.',
+      'Mancuernas a la altura de los hombros, palmas hacia adelante.',
+      'Empuja hacia arriba sin chocar las mancuernas, cabeza quieta y mirada al frente.',
+      'Baja controlado hasta los hombros. Empieza con poco peso.',
+    ],
+    video: 'press de hombro con mancuernas sentado con respaldo principiantes',
+  },
+  'alt-press-hombro-maquina': {
+    steps: [
+      'Ajusta el asiento para que los agarres queden a la altura de los hombros.',
+      'Espalda apoyada en el respaldo; empuja hacia arriba hasta casi estirar los brazos.',
+      'Baja despacio. No adelantes la cabeza.',
+    ],
+    video: 'press de hombro en máquina técnica',
+  },
+  'alt-curl-femoral-sentado': {
+    steps: [
+      'Ajusta la máquina: el rodillo de abajo detrás de los tobillos y el de arriba sobre los muslos.',
+      'Espalda apoyada en el respaldo; dobla las rodillas llevando los talones hacia abajo y atrás.',
+      'Vuelve despacio sin dejar caer el peso.',
+    ],
+    video: 'curl femoral sentado en máquina técnica',
+  },
+  'alt-curl-femoral-tumbado': {
+    steps: [
+      'Boca abajo en la máquina, rodillas justo fuera del borde del banco y rodillo sobre los tobillos.',
+      'Cadera pegada al banco: dobla las rodillas llevando los talones hacia los glúteos.',
+      'Baja despacio. Si arqueas la espalda baja, reduce el peso.',
+    ],
+    video: 'curl femoral tumbado en máquina técnica',
+  },
+  'alt-triceps-polea': {
+    steps: [
+      'De pie frente a la polea alta, toma la barra o cuerda con los codos pegados al cuerpo.',
+      'Empuja hacia abajo hasta estirar los brazos; solo se mueven los antebrazos.',
+      'Vuelve despacio hasta que los antebrazos queden paralelos al suelo.',
+    ],
+    video: 'extensión de tríceps en polea alta técnica',
+  },
+  'alt-triceps-mancuerna': {
+    steps: [
+      'Tumbada boca arriba en un banco, con la cabeza apoyada. Una mancuerna en cada mano, brazos estirados hacia el techo.',
+      'Dobla solo los codos bajando las mancuernas a los lados de la cabeza.',
+      'Estira los brazos de nuevo sin mover los codos. Empieza con poco peso.',
+    ],
+    video: 'extensión de tríceps con mancuernas tumbado en banco',
+  },
+  'alt-goblet': {
+    steps: [
+      'Sostén una mancuerna o kettlebell pegada al pecho con ambas manos.',
+      'Pies al ancho de hombros; baja llevando la cadera atrás, pecho arriba, hasta donde sea cómodo.',
+      'Sube empujando el suelo con todo el pie.',
+    ],
+    video: 'sentadilla goblet principiantes técnica',
+  },
+  'alt-cinta': {
+    steps: [
+      'Velocidad en la que te cueste un poco pero puedas hablar (por ejemplo 5-6 km/h).',
+      'Sin inclinación al principio; no te sostengas de las barras.',
+      'Si aparece dolor (no cansancio), baja el ritmo o termina.',
+    ],
+    video: 'caminar en cinta principiantes postura',
+  },
+  'alt-bici': {
+    steps: [
+      'Ajusta el asiento: con el pedal abajo, la rodilla queda apenas flexionada.',
+      'Espalda erguida, resistencia baja-moderada; pedalea a un ritmo en el que puedas hablar.',
+      'Si notas molestia lumbar, prueba una bici con respaldo (reclinada).',
+    ],
+    video: 'bicicleta estática principiantes postura ajuste asiento',
+  },
+  'alt-eliptica': {
+    steps: [
+      'Sube y toma las manillas; espalda erguida y mirada al frente.',
+      'Resistencia baja-moderada, a un ritmo en el que puedas hablar.',
+      'Empuja con todo el pie, sin despegar los talones.',
+    ],
+    video: 'elíptica cómo usarla principiantes',
+  },
   'movilidad-general': {
     steps: [
       'Tobillos: círculos y llevar la rodilla hacia adelante con el pie apoyado.',

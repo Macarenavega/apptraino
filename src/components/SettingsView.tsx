@@ -1,4 +1,4 @@
-import { CAUTIONS, type CautionId } from '../data/routine'
+import { CAUTIONS, alternativeName, groupName, type CautionId } from '../data/routine'
 import type { AppState } from '../lib/store'
 
 type Props = {
@@ -72,6 +72,41 @@ export function SettingsView({ state, update }: Props) {
           <button className="btn-ghost mt-2" onClick={() => update((s) => ({ ...s, phase: 1 }))}>
             Volver a Fase 1
           </button>
+        )}
+      </section>
+
+      <section className="card">
+        <h2 className="font-semibold">Ejercicios reemplazados</h2>
+        <p className="mt-1 text-sm text-muted">
+          Si no tienes el material de un ejercicio (por ejemplo bandas elásticas en el gimnasio), toca{' '}
+          <b>⇄ Cambiar</b> durante el entrenamiento y elige otra opción. Tu elección se recuerda para las próximas
+          sesiones.
+        </p>
+        {Object.keys(state.swaps).length === 0 ? (
+          <p className="mt-2 text-sm text-muted italic">Ningún ejercicio reemplazado por ahora.</p>
+        ) : (
+          <ul className="mt-3 divide-y divide-line">
+            {Object.entries(state.swaps).map(([group, altId]) => (
+              <li key={group} className="flex items-center gap-3 py-2 text-sm">
+                <div className="flex-1">
+                  <p className="font-medium">{alternativeName(altId) ?? altId}</p>
+                  <p className="text-muted">en lugar de: {groupName(group)}</p>
+                </div>
+                <button
+                  className="btn-ghost px-3 py-1 text-sm"
+                  onClick={() =>
+                    update((s) => {
+                      const swaps = { ...s.swaps }
+                      delete swaps[group]
+                      return { ...s, swaps }
+                    })
+                  }
+                >
+                  Volver al original
+                </button>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 

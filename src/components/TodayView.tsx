@@ -117,7 +117,7 @@ function SessionCard({
   onStart: () => void
 }) {
   const session = SESSIONS[id]
-  const { active, blocked } = resolveExercises(session, state.approvals)
+  const { active, blocked } = resolveExercises(session, state.approvals, state.swaps)
   return (
     <section className="card">
       <p className="text-sm text-muted">{isToday ? 'Toca hoy' : 'Sesión elegida'}</p>
@@ -128,7 +128,10 @@ function SessionCard({
       <ul className="mt-3 divide-y divide-line">
         {active.map((ex) => (
           <li key={ex.id} className="flex justify-between gap-3 py-2 text-sm">
-            <span>{ex.name}</span>
+            <span>
+              {ex.name}
+              {ex.swappedFrom && <span className="block text-xs text-muted">en lugar de: {ex.swappedFrom}</span>}
+            </span>
             <span className="shrink-0 text-muted tabular-nums">{formatTarget(ex.target, ex.sets)}</span>
           </li>
         ))}
