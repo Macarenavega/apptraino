@@ -76,6 +76,27 @@ export function SettingsView({ state, update }: Props) {
       </section>
 
       <section className="card">
+        <h2 className="font-semibold">Tu peso</h2>
+        <p className="mt-1 text-sm text-muted">Se usa para estimar las calorías quemadas en cada sesión.</p>
+        <label className="mt-3 flex items-center gap-2">
+          <input
+            type="number"
+            inputMode="decimal"
+            min={30}
+            max={250}
+            className="input w-28 text-center"
+            placeholder="kg"
+            aria-label="Peso en kg"
+            value={state.bodyWeight ?? ''}
+            onChange={(e) =>
+              update((s) => ({ ...s, bodyWeight: e.target.value === '' ? undefined : Number(e.target.value) }))
+            }
+          />
+          <span className="text-sm text-muted">kg</span>
+        </label>
+      </section>
+
+      <section className="card">
         <h2 className="font-semibold">Ejercicios reemplazados</h2>
         <p className="mt-1 text-sm text-muted">
           Si no tienes el material de un ejercicio (por ejemplo bandas elásticas en el gimnasio), toca{' '}

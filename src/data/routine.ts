@@ -59,8 +59,9 @@ export const CAUTIONS: Record<CautionId, { exercise: string; reason: string }> =
   },
 }
 
+/** El primer ítem es el cardio del calentamiento (se usa para estimar calorías) */
 export const WARMUP = [
-  'Caminata suave 5\'',
+  'Elíptica suave 10\'',
   'Movilidad de tobillo',
   'Movilidad de cadera',
   'Movilidad de hombro',

@@ -29,6 +29,8 @@ export type WorkoutLog = {
   phase: 1 | 2
   startedAt: string
   finishedAt?: string
+  /** Peso (kg) al terminar, para estimar calorías */
+  bodyWeight?: number
   warmup: boolean[]
   exercises: ExerciseLog[]
 }
@@ -45,6 +47,8 @@ export type AppState = {
   swaps: Swaps
   /** Días de entrenamiento elegidos por semana (clave: lunes AAAA-MM-DD; 0 = domingo … 6 = sábado) */
   weekPlans: Record<string, number[]>
+  /** Peso corporal en kg, para estimar calorías */
+  bodyWeight?: number
   history: WorkoutLog[]
   active?: WorkoutLog
 }

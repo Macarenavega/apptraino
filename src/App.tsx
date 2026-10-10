@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { HistoryView } from './components/HistoryView'
 import { SettingsView } from './components/SettingsView'
+import { SummaryView } from './components/SummaryView'
 import { TimerBar } from './components/TimerBar'
 import { TodayView } from './components/TodayView'
 import { WorkoutView } from './components/WorkoutView'
@@ -14,12 +15,28 @@ export default function App() {
   const [state, update] = useAppState()
   const [tab, setTab] = useState<Tab>('today')
   const [inWorkout, setInWorkout] = useState(false)
+  /** Sesión recién terminada cuyo resumen se muestra */
+  const [summaryId, setSummaryId] = useState<string | null>(null)
+  const summary = summaryId ? state.history.find((w) => w.id === summaryId) : undefined
   const timer = useTimer()
 
   return (
     <div className="min-h-dvh pb-40">
       <main className="mx-auto max-w-xl px-4 pt-6">
-        {tab === 'today' && inWorkout && state.active ? (
+        {tab === 'today' && summary ? (
+          <SummaryView
+            workout={summary}
+            bodyWeight={state.bodyWeight}
+            onWeight={(kg) =>
+              update((s) => ({
+                ...s,
+                bodyWeight: kg,
+                history: s.history.map((w) => (w.id === summary.id && !w.bodyWeight ? { ...w, bodyWeight: kg } : w)),
+              }))
+            }
+            onClose={() => setSummaryId(null)}
+          />
+        ) : tab === 'today' && inWorkout && state.active ? (
           <WorkoutView
             workout={state.active}
             approvals={state.approvals}
@@ -44,7 +61,7 @@ export default function App() {
             onFinish={() => {
               update((s) => {
                 if (!s.active) return s
-                const finished = { ...s.active, finishedAt: new Date().toISOString() }
+                const finished = { ...s.active, finishedAt: new Date().toISOString(), bodyWeight: s.bodyWeight }
                 const lastLevels = { ...s.lastLevels }
                 for (const e of finished.exercises) if (e.level.trim()) lastLevels[e.exerciseId] = e.level.trim()
                 return {
@@ -56,6 +73,7 @@ export default function App() {
                   startDate: s.startDate ?? (finished.sessionId === 'core' ? undefined : finished.startedAt),
                 }
               })
+              setSummaryId(state.active?.id ?? null)
               setInWorkout(false)
             }}
           />
@@ -82,6 +100,7 @@ export default function App() {
         ) : tab === 'history' ? (
           <HistoryView
             history={state.history}
+            bodyWeight={state.bodyWeight}
             onDelete={(id) => update((s) => ({ ...s, history: s.history.filter((w) => w.id !== id) }))}
           />
         ) : (
