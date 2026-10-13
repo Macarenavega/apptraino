@@ -15,7 +15,7 @@ Se instala en el celular como una app (PWA) y guarda todo en el propio dispositi
 - **Temporizadores**: descanso automático al marcar una serie, y cuenta regresiva para plancha y caminata.
 - **Fases**: la Fase 2 se desbloquea tras 4 semanas de Fase 1 y una revisión de criterios.
 - **Cómo se hace**: cada ejercicio trae una explicación breve paso a paso, imágenes de referencia (posición inicial y final) cuando hay, y un link para buscar videos en YouTube.
-- **Calorías**: al terminar cada sesión se muestra una estimación de calorías quemadas (método MET, con tu peso), y en Historial hay un panel con el total semanal y las últimas 8 semanas.
+- **Calorías**: en Hoy, el total estimado del día (todas las sesiones, core incluido); al terminar cada sesión se muestra una estimación de calorías quemadas (método MET, con tu peso), y en Historial hay un panel con el total semanal y las últimas 8 semanas.
 - **Historial** de entrenamientos y respaldo/restauración de datos.
 
 ## Desarrollo

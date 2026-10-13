@@ -16,6 +16,7 @@ import {
   type CautionId,
   type SessionId,
 } from '../data/routine'
+import { estimateCalories } from '../lib/calories'
 import { daysSince, type AppState } from '../lib/store'
 
 type Props = {
@@ -92,6 +93,8 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
 
       {!state.active && <CoreCard now={now} done={coreDone} onStart={() => onStart('core')} />}
 
+      <DayCalories state={state} now={now} onOpenSettings={onOpenSettings} />
+
       {!state.active && (
         <section>
           <h3 className="mb-2 text-sm font-semibold text-muted">Hacer otra sesión</h3>
@@ -156,6 +159,47 @@ function SessionCard({
       <button className="btn-primary mt-4 w-full py-3 text-lg" onClick={onStart}>
         {doneToday ? 'Repetir' : 'Empezar'}
       </button>
+    </section>
+  )
+}
+
+/** Calorías estimadas del día: suma de las sesiones terminadas hoy */
+function DayCalories({ state, now, onOpenSettings }: { state: AppState; now: Date; onOpenSettings: () => void }) {
+  const today = state.history.filter((w) => w.finishedAt && new Date(w.startedAt).toDateString() === now.toDateString())
+  if (today.length === 0) return null
+  const rows = today.map((w) => {
+    const kg = w.bodyWeight ?? state.bodyWeight
+    return { w, est: kg ? estimateCalories(w, kg) : undefined }
+  })
+  if (rows.some((r) => !r.est)) {
+    return (
+      <button className="card block w-full text-left text-sm text-muted" onClick={onOpenSettings}>
+        Agrega tu peso en <b>Ajustes</b> para ver las calorías quemadas hoy.
+      </button>
+    )
+  }
+  const kcal = rows.reduce((n, r) => n + (r.est?.kcal ?? 0), 0)
+  const minutes = rows.reduce((n, r) => n + (r.est?.minutes ?? 0), 0)
+  return (
+    <section className="card">
+      <p className="text-sm text-muted">Calorías de hoy (estimación)</p>
+      <p className="mt-1 text-4xl font-semibold">
+        {Math.round(kcal).toLocaleString('es')}
+        <span className="ml-1 text-lg font-medium text-muted">kcal</span>
+      </p>
+      <p className="text-sm text-muted">
+        {Math.round(minutes)}' de actividad · {rows.length} {rows.length === 1 ? 'sesión' : 'sesiones'}
+      </p>
+      <ul className="mt-3 divide-y divide-line">
+        {rows.map(({ w, est }) => (
+          <li key={w.id} className="flex justify-between gap-3 py-2 text-sm">
+            <span>{w.sessionName}</span>
+            <span className="shrink-0 tabular-nums">
+              {Math.round(est?.kcal ?? 0)} kcal <span className="text-muted">· {Math.round(est?.minutes ?? 0)}'</span>
+            </span>
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }
