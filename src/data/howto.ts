@@ -351,6 +351,40 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'activación del transverso abdominal acostado',
   },
+  'abs-abrir-cerrar': {
+    steps: [
+      'Sentada en la colchoneta, manos apoyadas detrás de la cadera y tronco inclinado hacia atrás con la espalda recta. Dos mancuernas en el suelo frente a ti, como obstáculo.',
+      'Con los pies en el aire, abre las piernas por fuera de las mancuernas.',
+      'Recoge las rodillas hacia el pecho y vuelve a bajar con las piernas juntas en el centro. Eso es 1 repetición.',
+      'Abdomen apretado y espalda baja estable: si se arquea o molesta el sacro, para.',
+    ],
+    video: 'seated leg raise open close over dumbbells abs',
+  },
+  'abs-lado-lado': {
+    steps: [
+      'Sentada en la colchoneta, manos apoyadas detrás de la cadera y tronco inclinado hacia atrás con la espalda recta. Dos mancuernas en el suelo frente a ti, como obstáculo.',
+      'Con las piernas juntas y los pies en el aire, pásalas por encima de la mancuerna de un lado al otro.',
+      'Cada pasada cuenta 1. Gira desde la cintura sin mover los hombros.',
+    ],
+    video: 'seated leg raise side to side over dumbbell obliques',
+  },
+  'abs-rodillas-diagonal': {
+    steps: [
+      'Sentada en la colchoneta, manos apoyadas detrás de la cadera y tronco inclinado hacia atrás con la espalda recta. Dos mancuernas en el suelo frente a ti, como obstáculo.',
+      'Recoge las rodillas hacia el pecho.',
+      'Estira las piernas en diagonal hacia un lado, bajas pero sin tocar el suelo, y vuelve a recoger.',
+      'Alterna el lado en cada repetición.',
+    ],
+    video: 'seated knee tuck diagonal leg extension abs',
+  },
+  'abs-barrido-bajo': {
+    steps: [
+      'Sentada en la colchoneta, manos apoyadas detrás de la cadera y tronco inclinado hacia atrás con la espalda recta. Dos mancuernas en el suelo frente a ti, como obstáculo.',
+      'Con las piernas juntas, cerca del suelo y las rodillas un poco dobladas, barre de un lado al otro de la mancuerna.',
+      'Movimiento controlado, sin impulso. Cada pasada cuenta 1.',
+    ],
+    video: 'seated low leg sweeps side to side abs dumbbell',
+  },
   'movilidad-general': {
     steps: [
       'Tobillos: círculos y llevar la rodilla hacia adelante con el pie apoyado.',

@@ -39,7 +39,8 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
   const doneToday = state.history.some(
     (w) => w.sessionId === sessionId && new Date(w.startedAt).toDateString() === now.toDateString(),
   )
-  const sessionsInPhase = PHASE_ORDER[state.phase]
+  // La sesión de abdomen es extra: se elige aquí, no entra en el plan semanal
+  const sessionsInPhase: SessionId[] = [...PHASE_ORDER[state.phase], 'abs']
   const coreDone = state.history.some(
     (w) => w.sessionId === 'core' && new Date(w.startedAt).toDateString() === now.toDateString(),
   )
@@ -156,9 +157,15 @@ function SessionCard({
           </li>
         ))}
       </ul>
-      <button className="btn-primary mt-4 w-full py-3 text-lg" onClick={onStart}>
-        {doneToday ? 'Repetir' : 'Empezar'}
-      </button>
+      {active.length === 0 ? (
+        <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm dark:bg-amber-950/40">
+          ⚠️ Esta sesión está desactivada hasta que un profesional la apruebe (Ajustes → Ejercicios con ⚠️).
+        </p>
+      ) : (
+        <button className="btn-primary mt-4 w-full py-3 text-lg" onClick={onStart}>
+          {doneToday ? 'Repetir' : 'Empezar'}
+        </button>
+      )}
     </section>
   )
 }

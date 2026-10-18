@@ -58,7 +58,7 @@ const KEY = 'apptraino:v1'
 const initialState: AppState = {
   version: 1,
   phase: 1,
-  approvals: { superman: false, pike: false, rdl: false },
+  approvals: { superman: false, pike: false, rdl: false, abdomen: false },
   lastLevels: {},
   swaps: {},
   weekPlans: {},

@@ -6,7 +6,7 @@ export type Target =
   | { kind: 'minutes'; min: number; max: number }
   | { kind: 'check'; label: string }
 
-export type CautionId = 'superman' | 'pike' | 'rdl'
+export type CautionId = 'superman' | 'pike' | 'rdl' | 'abdomen'
 
 export type Exercise = {
   id: string
@@ -35,7 +35,7 @@ export type Alternative = {
   perSide?: boolean
 }
 
-export type SessionId = 'supA' | 'infA' | 'supB' | 'infB' | 'full' | 'mov' | 'core'
+export type SessionId = 'supA' | 'infA' | 'supB' | 'infB' | 'full' | 'mov' | 'core' | 'abs'
 
 export type Session = {
   id: SessionId
@@ -56,6 +56,11 @@ export const CAUTIONS: Record<CautionId, { exercise: string; reason: string }> =
   rdl: {
     exercise: 'Peso muerto rumano a una pierna asistido',
     reason: 'Flexión de cadera con bisagra de tronco (molestia en el sacro).',
+  },
+  abdomen: {
+    exercise: 'Rutina de abdomen (4 ejercicios, 4 × 20)',
+    reason:
+      'Piernas elevadas sin apoyo con el tronco inclinado: flexión de cadera con carga en la zona lumbar/sacra, y volumen alto.',
   },
 }
 
@@ -133,6 +138,49 @@ export function coreExerciseFor(date: Date) {
 }
 
 export const SESSIONS: Record<SessionId, Session> = {
+  abs: {
+    id: 'abs',
+    name: 'Abdomen (4 ejercicios)',
+    estimate: '~15\'',
+    exercises: [
+      {
+        id: 'abs-abrir-cerrar',
+        name: 'Piernas abiertas y cerradas sobre las mancuernas',
+        sets: 4,
+        target: { kind: 'reps', min: 20, max: 20 },
+        rest: 30,
+        note: 'Si 20 cuesta con buena técnica, empieza con menos repeticiones',
+        caution: 'abdomen',
+      },
+      {
+        id: 'abs-lado-lado',
+        name: 'Piernas juntas de lado a lado por encima de la mancuerna',
+        sets: 4,
+        target: { kind: 'reps', min: 20, max: 20 },
+        rest: 30,
+        note: 'Oblicuos. Cada pasada a un lado cuenta 1',
+        caution: 'abdomen',
+      },
+      {
+        id: 'abs-rodillas-diagonal',
+        name: 'Recoger rodillas y estirar las piernas en diagonal',
+        sets: 4,
+        target: { kind: 'reps', min: 20, max: 20 },
+        rest: 30,
+        note: 'Alterna el lado hacia el que estiras',
+        caution: 'abdomen',
+      },
+      {
+        id: 'abs-barrido-bajo',
+        name: 'Barrido bajo de piernas de lado a lado',
+        sets: 4,
+        target: { kind: 'reps', min: 20, max: 20 },
+        rest: 30,
+        note: 'Piernas cerca del suelo, rodillas semiflexionadas',
+        caution: 'abdomen',
+      },
+    ],
+  },
   core: {
     id: 'core',
     name: 'Core diario',
