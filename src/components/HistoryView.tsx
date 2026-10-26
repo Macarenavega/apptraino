@@ -14,7 +14,7 @@ export function HistoryView({ history, bodyWeight, onDelete }: Props) {
   return (
     <div className="space-y-4">
       <header>
-        <h1 className="text-2xl font-bold">Historial</h1>
+        <h1 className="text-[32px] leading-tight font-light">Historial</h1>
         <p className="text-sm text-muted">
           {history.length} {history.length === 1 ? 'entrenamiento' : 'entrenamientos'}
         </p>

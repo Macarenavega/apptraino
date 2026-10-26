@@ -42,7 +42,7 @@ export function SettingsView({ state, update }: Props) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Ajustes</h1>
+      <h1 className="text-[32px] leading-tight font-light">Ajustes</h1>
 
       {programOf(state) === 'm1' && (
     <section className="card">

@@ -22,7 +22,7 @@ export function SummaryView({ workout, bodyWeight, onWeight, onClose }: Props) {
     <div className="space-y-4">
       <header>
         <p className="text-sm text-muted">Sesión terminada</p>
-        <h1 className="text-2xl font-bold">{workout.sessionName}</h1>
+        <h1 className="text-[32px] leading-tight font-light">{workout.sessionName}</h1>
       </header>
 
       {est ? (

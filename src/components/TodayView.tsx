@@ -8,6 +8,7 @@ import {
   PHASE1_DAYS,
   PHASE2_CRITERIA,
   SESSIONS,
+  EXERCISE_IMAGES,
   coreExerciseFor,
   formatTarget,
   missingSessions,
@@ -52,17 +53,20 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
 
   return (
     <div className="space-y-4">
-      <header>
-        <p className="text-sm text-muted">
-          {DAY_NAMES[today]} · {isM2 ? `Mes 2 · Semana ${Math.min(4, m2Week(state, now))} de 4` : `Fase ${state.phase}`}
-        </p>
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold">Hoy</h1>
-          <button className="btn-ghost px-3 py-1.5 text-sm" onClick={() => setOpenPlanner((n) => n + 1)}>
-            📅 Elegir días
-          </button>
-        </div>
-      </header>
+      <Hero
+        state={state}
+        now={now}
+        sessionId={sessionId}
+        isToday={sessionId === plan.session}
+        doneToday={doneToday}
+        restLabel={plan.restLabel}
+        label={`${DAY_NAMES[today]} · ${isM2 ? `Mes 2 · Semana ${Math.min(4, m2Week(state, now))} de 4` : `Fase ${state.phase}`}`}
+        onStart={() => sessionId && onStart(sessionId)}
+        coreDone={coreDone}
+        onCore={() => onStart('core')}
+        onResume={onResume}
+        onPlanDays={() => setOpenPlanner((n) => n + 1)}
+      />
 
       {isM2 && (
         <section className="card border-amber-300 bg-amber-50 text-sm dark:border-amber-700 dark:bg-amber-950/40">
@@ -85,29 +89,7 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         </button>
       )}
 
-      {state.active ? (
-        <section className="card">
-          <p className="text-sm text-muted">Entrenamiento en curso</p>
-          <h2 className="text-xl font-semibold">{state.active.sessionName}</h2>
-          <button className="btn-primary mt-4 w-full py-3" onClick={onResume}>
-            Continuar
-          </button>
-        </section>
-      ) : sessionId ? (
-        <SessionCard
-          state={state}
-          id={sessionId}
-          isToday={sessionId === plan.session}
-          doneToday={doneToday}
-          onStart={() => onStart(sessionId)}
-        />
-      ) : (
-        <section className="card text-center">
-          <p className="text-4xl">🌿</p>
-          <h2 className="mt-2 text-xl font-semibold">Día de descanso</h2>
-          <p className="mt-1 text-muted">{plan.restLabel}</p>
-        </section>
-      )}
+      {!state.active && sessionId && <SessionCard state={state} id={sessionId} />}
 
       {!state.active && <CoreCard now={now} done={coreDone} onStart={() => onStart('core')} />}
 
@@ -136,32 +118,17 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
   )
 }
 
-function SessionCard({
-  state,
-  id,
-  isToday,
-  doneToday,
-  onStart,
-}: {
-  state: AppState
-  id: SessionId
-  isToday: boolean
-  doneToday: boolean
-  onStart: () => void
-}) {
+function SessionCard({ state, id }: { state: AppState; id: SessionId }) {
   const session = SESSIONS[id]
   const { active, blocked } = resolveExercises(session, state.approvals, state.swaps)
   return (
     <section className="card">
-      <p className="text-sm text-muted">{isToday ? 'Toca hoy' : 'Sesión elegida'}</p>
-      <h2 className="text-xl font-semibold">
-        {session.name} {doneToday && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
-      </h2>
-      {session.estimate && <p className="text-sm text-muted">Tiempo estimado: {session.estimate}</p>}
-      <ul className="mt-3 divide-y divide-line">
-        {active.map((ex) => (
-          <li key={ex.id} className="flex justify-between gap-3 py-2 text-sm">
-            <span>
+      <p className="eyebrow text-muted">En esta sesión</p>
+      <ul className="mt-2 divide-y divide-line">
+        {active.map((ex, i) => (
+          <li key={ex.id} className="flex items-baseline gap-3 py-2.5 text-sm">
+            <span className="w-5 shrink-0 text-xs font-medium text-muted tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+            <span className="flex-1">
               {ex.name}
               {ex.swappedFrom && <span className="block text-xs text-muted">en lugar de: {ex.swappedFrom}</span>}
             </span>
@@ -169,22 +136,162 @@ function SessionCard({
           </li>
         ))}
         {blocked.map((ex) => (
-          <li key={ex.id} className="flex justify-between gap-3 py-2 text-sm text-muted line-through">
+          <li key={ex.id} className="flex justify-between gap-3 py-2.5 text-sm text-muted line-through">
             <span>⚠️ {ex.name}</span>
           </li>
         ))}
       </ul>
-      {active.length === 0 ? (
-        <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm dark:bg-amber-950/40">
-          ⚠️ Esta sesión está desactivada hasta que un profesional la apruebe (Ajustes → Ejercicios con ⚠️).
-        </p>
-      ) : (
-        <button className="btn-primary mt-4 w-full py-3 text-lg" onClick={onStart}>
-          {doneToday ? 'Repetir' : 'Empezar'}
-        </button>
-      )}
     </section>
   )
+}
+
+/** Portada oscura con foto: la sesión de hoy, cómo va la semana y el botón para empezar */
+function Hero({
+  state,
+  now,
+  sessionId,
+  isToday,
+  doneToday,
+  restLabel,
+  label,
+  coreDone,
+  onStart,
+  onCore,
+  onResume,
+  onPlanDays,
+}: {
+  state: AppState
+  now: Date
+  sessionId?: SessionId
+  isToday: boolean
+  doneToday: boolean
+  restLabel?: string
+  label: string
+  coreDone: boolean
+  onStart: () => void
+  onCore: () => void
+  onResume: () => void
+  onPlanDays: () => void
+}) {
+  const session = sessionId ? SESSIONS[sessionId] : undefined
+  const exercises = session ? resolveExercises(session, state.approvals, state.swaps).active : []
+  const photo = heroPhoto(state.active ? [] : exercises, now)
+  const stats = weekStats(state, now)
+
+  let eyebrow: string
+  let title: string
+  let subtitle: string
+  if (state.active) {
+    eyebrow = 'En curso'
+    title = state.active.sessionName
+    subtitle = 'Tu entrenamiento te espera donde lo dejaste.'
+  } else if (session) {
+    eyebrow = doneToday ? 'Hecho hoy ✓' : isToday ? 'Toca hoy' : 'Sesión elegida'
+    title = session.name
+    subtitle =
+      exercises.length === 0
+        ? 'Desactivada hasta que un profesional la apruebe (Ajustes).'
+        : `${exercises.length} ejercicios${session.estimate ? ` · ${session.estimate}` : ''}`
+  } else {
+    eyebrow = 'Descanso'
+    title = 'Recupera hoy'
+    subtitle = restLabel ?? 'Día de descanso'
+  }
+
+  return (
+    <section className="relative -mx-4 -mt-6 overflow-hidden bg-stage px-5 pt-[calc(env(safe-area-inset-top)+1.25rem)] pb-7 text-white sm:mx-0 sm:mt-0 sm:rounded-3xl">
+      {photo && (
+        <img
+          src={photo}
+          alt=""
+          className="absolute inset-0 size-full object-cover opacity-45 grayscale contrast-125"
+          aria-hidden
+        />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-stage via-stage/75 to-stage/35" aria-hidden />
+
+      <div className="relative">
+        <div className="flex items-center justify-between gap-3">
+          <p className="eyebrow text-white/70">{label}</p>
+          <button
+            className="shrink-0 rounded-[28px] border-[1.5px] border-white/60 px-3.5 py-1.5 text-sm font-medium active:bg-white/10"
+            onClick={onPlanDays}
+          >
+            Elegir días
+          </button>
+        </div>
+
+        <p className="eyebrow mt-20 text-emerald-400">{eyebrow}</p>
+        <h1 className="mt-1 text-[44px] leading-[1.07] font-light tracking-[-0.008em]">{title}</h1>
+        <p className="mt-2 text-white/70">{subtitle}</p>
+
+        <div className="mt-6 flex gap-2">
+          {state.active ? (
+            <button className="btn-primary flex-1 py-4 text-lg" onClick={onResume}>
+              Continuar
+            </button>
+          ) : session && exercises.length > 0 ? (
+            <button className="btn-primary flex-1 py-4 text-lg" onClick={onStart}>
+              {doneToday ? 'Repetir' : 'Empezar'}
+            </button>
+          ) : (
+            <button className="btn-primary flex-1 py-4 text-lg" onClick={onCore}>
+              {coreDone ? 'Repetir el core diario' : 'Hacer el core diario'}
+            </button>
+          )}
+        </div>
+
+        <dl className="mt-7 grid grid-cols-3 border-t border-white/15 pt-4 text-center">
+          <Stat value={`${stats.done}/${stats.planned}`} label="Esta semana" />
+          <Stat value={stats.streak ? `${stats.streak}` : '–'} label={stats.streak === 1 ? 'Día seguido' : 'Días seguidos'} />
+          <Stat value={stats.kcal ? stats.kcal.toLocaleString('es') : '–'} label="Kcal semana" />
+        </dl>
+      </div>
+    </section>
+  )
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <dt className="sr-only">{label}</dt>
+      <dd className="text-2xl font-light tabular-nums">{value}</dd>
+      <dd className="eyebrow mt-0.5 text-[10px] text-white/60">{label}</dd>
+    </div>
+  )
+}
+
+/** Foto de fondo: la del primer ejercicio de la sesión que tenga imagen (o la del core del día) */
+function heroPhoto(exercises: { id: string }[], now: Date) {
+  const id = [...exercises.map((e) => e.id), coreExerciseFor(now).id, 'pushup-inclinado'].find(
+    (x) => EXERCISE_IMAGES[x],
+  )
+  return id ? `${import.meta.env.BASE_URL}exercises/${EXERCISE_IMAGES[id].folder}/0.jpg` : undefined
+}
+
+/** Sesiones de la semana (sin contar el core), días seguidos entrenando y calorías de la semana */
+function weekStats(state: AppState, now: Date) {
+  const key = weekKey(now)
+  const finished = state.history.filter((w) => w.finishedAt)
+  const thisWeek = finished.filter((w) => weekKey(new Date(w.startedAt)) === key)
+  const planned = planWeek(weekPlanOf(state), state.weekPlans[key]).filter((d) => d.session).length
+  const done = thisWeek.filter((w) => w.sessionId !== 'core').length
+  const kcal = Math.round(
+    thisWeek.reduce((n, w) => {
+      const kg = w.bodyWeight ?? state.bodyWeight
+      return n + (kg ? estimateCalories(w, kg).kcal : 0)
+    }, 0),
+  )
+  // Racha: días seguidos con algo hecho, terminando hoy (o ayer si hoy todavía no)
+  const days = new Set(finished.map((w) => new Date(w.startedAt).toDateString()))
+  const day = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  if (!days.has(day.toDateString())) day.setDate(day.getDate() - 1)
+  let streak = 0
+  while (days.has(day.toDateString())) {
+    streak++
+    day.setDate(day.getDate() - 1)
+  }
+  return { done, planned, streak, kcal }
 }
 
 /** Calorías estimadas del día: suma de las sesiones terminadas hoy */

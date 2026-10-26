@@ -9,7 +9,7 @@ export function TimerBar({ timer }: { timer: Timer }) {
   return (
     <div className="fixed inset-x-0 bottom-16 z-20 px-3 pb-2">
       <div
-        className={`mx-auto max-w-xl overflow-hidden rounded-2xl shadow-lg ${
+        className={`mx-auto max-w-xl overflow-hidden rounded-3xl shadow-lg ${
           isRest ? 'bg-sky-600' : 'bg-emerald-600'
         } text-white`}
       >
@@ -21,7 +21,7 @@ export function TimerBar({ timer }: { timer: Timer }) {
             <div className="text-xs uppercase tracking-wide opacity-80">{isRest ? 'Descanso' : 'En curso'}</div>
             <div className="truncate text-sm font-medium">{t.label}</div>
           </div>
-          <div className="text-3xl font-bold tabular-nums">{formatClock(timer.remaining)}</div>
+          <div className="text-4xl font-light tabular-nums">{formatClock(timer.remaining)}</div>
         </div>
         <div className="flex gap-2 px-4 pb-3">
           {isRest ? (

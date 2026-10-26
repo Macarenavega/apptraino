@@ -13,15 +13,25 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       // Incluye las imágenes de ejercicios para que funcione sin internet
-      workbox: { globPatterns: ['**/*.{js,css,html,svg,png,jpg}'] },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,jpg}'],
+        // La tipografía Inter queda guardada para usar la app sin conexión
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/,
+            handler: 'CacheFirst',
+            options: { cacheName: 'fuentes', expiration: { maxEntries: 20, maxAgeSeconds: 31_536_000 } },
+          },
+        ],
+      },
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Apptraino',
         short_name: 'Apptraino',
         description: 'Rutina principiante de calistenia: tren superior + tren inferior',
         lang: 'es',
-        theme_color: '#059669',
-        background_color: '#0f1216',
+        theme_color: '#181a1d',
+        background_color: '#181a1d',
         display: 'standalone',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },

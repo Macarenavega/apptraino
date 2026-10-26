@@ -76,7 +76,7 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
     <div className="space-y-4">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">{workout.sessionName}</h1>
+          <h1 className="text-[32px] leading-tight font-light">{workout.sessionName}</h1>
           <p className="text-sm text-muted">
             {doneSets}/{totalSets} series · Fase {workout.phase}
           </p>
