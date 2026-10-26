@@ -385,6 +385,38 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'seated low leg sweeps side to side abs dumbbell',
   },
+  prensa: {
+    steps: [
+      'Siéntate con la espalda y la cadera bien apoyadas en el respaldo; pies al ancho de caderas en la plataforma.',
+      'Baja la plataforma doblando las rodillas en un rango cómodo, sin que la cadera se despegue del asiento.',
+      'Empuja hasta casi estirar las piernas, sin bloquear las rodillas. Rodillas en la línea de los pies.',
+    ],
+    video: 'prensa de piernas técnica principiantes',
+  },
+  'extension-cuadriceps': {
+    steps: [
+      'Ajusta la máquina: rodilla alineada con el eje y el rodillo sobre los tobillos. Espalda apoyada.',
+      'Estira las piernas hasta arriba y aprieta el cuádriceps 1".',
+      'Baja despacio sin dejar caer el peso.',
+    ],
+    video: 'extensión de cuádriceps en máquina técnica',
+  },
+  'alt-goblet-pausa': {
+    steps: [
+      'Mancuerna pegada al pecho, pies al ancho de hombros.',
+      'Baja con el pecho arriba y quédate 2" abajo sin rebotar.',
+      'Sube empujando el suelo con todo el pie.',
+    ],
+    video: 'sentadilla goblet con pausa',
+  },
+  'plancha-inclinada': {
+    steps: [
+      'Apoya los antebrazos o las manos en un banco y lleva los pies atrás hasta que el cuerpo quede en línea.',
+      'Aprieta abdomen y glúteos: la cadera no cae ni sube.',
+      'Mirada al banco, cuello alineado. Respira normal.',
+    ],
+    video: 'plancha inclinada manos en banco principiantes',
+  },
   'movilidad-general': {
     steps: [
       'Tobillos: círculos y llevar la rodilla hacia adelante con el pie apoyado.',

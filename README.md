@@ -1,6 +1,11 @@
 # Apptraino
 
-App para seguir la **Rutina Principiante de Calistenia**: Tren Superior (fuerza) + Tren Inferior (hipertrofia).
+App para seguir la rutina de calistenia: Tren Superior (fuerza) + Tren Inferior (hipertrofia). Tiene dos programas:
+
+- **Mes 2 (en uso)**: 4 días, 4 semanas; mismos días que el Mes 1, sube la dificultad. Semana 4 de descarga (la app pone 2 series por ejercicio).
+- **Mes 1**: rutina principiante con Fase 1 (4 días) y Fase 2 (5-6 días).
+
+El programa se elige en Ajustes. Cambiar de programa no borra el historial.
 
 Se instala en el celular como una app (PWA) y guarda todo en el propio dispositivo, sin cuenta ni servidor.
 

@@ -1,5 +1,14 @@
-import { CAUTIONS, alternativeName, groupName, type CautionId } from '../data/routine'
-import type { AppState } from '../lib/store'
+import {
+  CAUTIONS,
+  M2_PROGRESSIONS,
+  M2_START,
+  PROGRAM_NAMES,
+  alternativeName,
+  groupName,
+  type CautionId,
+  type ProgramId,
+} from '../data/routine'
+import { programOf, type AppState } from '../lib/store'
 
 type Props = {
   state: AppState
@@ -35,43 +44,71 @@ export function SettingsView({ state, update }: Props) {
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Ajustes</h1>
 
-      <section className="card">
-        <h2 className="font-semibold">Ejercicios con ⚠️</h2>
-        <p className="mt-1 text-sm text-muted">
-          Hay una molestia en el sacro y una protrusión cervical reportadas. Activa cada ejercicio solo cuando un
-          traumatólogo o fisioterapeuta confirme que está permitido.
-        </p>
-        <ul className="mt-3 divide-y divide-line">
-          {(Object.keys(CAUTIONS) as CautionId[]).map((id) => (
-            <li key={id} className="flex items-center gap-3 py-3">
-              <div className="flex-1">
-                <p className="font-medium">{CAUTIONS[id].exercise}</p>
-                <p className="text-sm text-muted">{CAUTIONS[id].reason}</p>
-              </div>
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  className="size-5 accent-emerald-600"
-                  checked={state.approvals[id]}
-                  onChange={(e) => toggle(id, e.target.checked)}
-                />
-                Aprobado
-              </label>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {programOf(state) === 'm1' && (
+    <section className="card">
+          <h2 className="font-semibold">Ejercicios con ⚠️</h2>
+          <p className="mt-1 text-sm text-muted">
+            Hay una molestia en el sacro y una protrusión cervical reportadas. Activa cada ejercicio solo cuando un
+            traumatólogo o fisioterapeuta confirme que está permitido.
+          </p>
+          <ul className="mt-3 divide-y divide-line">
+            {(Object.keys(CAUTIONS) as CautionId[]).map((id) => (
+              <li key={id} className="flex items-center gap-3 py-3">
+                <div className="flex-1">
+                  <p className="font-medium">{CAUTIONS[id].exercise}</p>
+                  <p className="text-sm text-muted">{CAUTIONS[id].reason}</p>
+                </div>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    className="size-5 accent-emerald-600"
+                    checked={state.approvals[id]}
+                    onChange={(e) => toggle(id, e.target.checked)}
+                  />
+                  Aprobado
+                </label>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="card">
-        <h2 className="font-semibold">Fase</h2>
+        <h2 className="font-semibold">Programa</h2>
         <p className="mt-1 text-sm text-muted">
-          Estás en Fase {state.phase}.
-          {state.phase === 2 && ' Si aparece dolor articular o te cuesta sostener el volumen, puedes volver a Fase 1.'}
+          Cambiar de programa no borra nada: el historial se conserva y los ejercicios que se repiten recuerdan tu nivel.
         </p>
-        {state.phase === 2 && (
-          <button className="btn-ghost mt-2" onClick={() => update((s) => ({ ...s, phase: 1 }))}>
-            Volver a Fase 1
-          </button>
+        <div className="mt-3 space-y-2">
+          {(Object.keys(PROGRAM_NAMES) as ProgramId[]).map((id) => {
+            const current = programOf(state) === id
+            return (
+              <button
+                key={id}
+                className={`w-full rounded-lg border px-3 py-2 text-left text-sm ${
+                  current ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40' : 'border-line bg-surface'
+                }`}
+                aria-pressed={current}
+                onClick={() => update((s) => ({ ...s, program: id }))}
+              >
+                <span className="font-medium">{PROGRAM_NAMES[id].name}</span>
+                {current && <span className="text-emerald-700 dark:text-emerald-400"> · en uso</span>}
+                <span className="block text-muted">{PROGRAM_NAMES[id].description}</span>
+              </button>
+            )
+          })}
+        </div>
+        {programOf(state) === 'm1' && (
+          <>
+            <p className="mt-3 text-sm text-muted">
+              Estás en Fase {state.phase}.
+              {state.phase === 2 && ' Si aparece dolor articular o te cuesta sostener el volumen, puedes volver a Fase 1.'}
+            </p>
+            {state.phase === 2 && (
+              <button className="btn-ghost mt-2" onClick={() => update((s) => ({ ...s, phase: 1 }))}>
+                Volver a Fase 1
+              </button>
+            )}
+          </>
         )}
       </section>
 
@@ -131,21 +168,42 @@ export function SettingsView({ state, update }: Props) {
         )}
       </section>
 
+      {programOf(state) === 'm2' ? (
+        <>
+          <section className="card">
+            <h2 className="font-semibold">Progresión de nivel (Mes 2)</h2>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+              {M2_PROGRESSIONS.map((r) => (
+                <li key={r}>{r}</li>
+              ))}
+            </ul>
+          </section>
+          <section className="card">
+            <h2 className="font-semibold">Punto de partida (marcas del Mes 1)</h2>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+              {M2_START.map((r) => (
+                <li key={r}>{r}</li>
+              ))}
+            </ul>
+          </section>
+        </>
+      ) : (
       <section className="card">
-        <h2 className="font-semibold">Progresión de carga</h2>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
-          <li>
-            Cuando completes todas las series y reps con buena técnica y sin llegar al fallo, avanza al siguiente nivel:
-            bajar la altura del apoyo (push up), aumentar la tensión de la banda o reducir la asistencia en la
-            sentadilla.
-          </li>
-          <li>No agregues días y subas dificultad a la vez: una cosa por vez.</li>
-          <li>
-            Si aparece dolor articular (no confundir con agujetas normales), baja dificultad o volumen de ese ejercicio
-            y avisa si persiste.
-          </li>
-        </ul>
-      </section>
+          <h2 className="font-semibold">Progresión de carga</h2>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+            <li>
+              Cuando completes todas las series y reps con buena técnica y sin llegar al fallo, avanza al siguiente nivel:
+              bajar la altura del apoyo (push up), aumentar la tensión de la banda o reducir la asistencia en la
+              sentadilla.
+            </li>
+            <li>No agregues días y subas dificultad a la vez: una cosa por vez.</li>
+            <li>
+              Si aparece dolor articular (no confundir con agujetas normales), baja dificultad o volumen de ese ejercicio
+              y avisa si persiste.
+            </li>
+          </ul>
+        </section>
+      )}
 
       <section className="card">
         <h2 className="font-semibold">Créditos</h2>

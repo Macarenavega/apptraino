@@ -3,9 +3,10 @@ import {
   CAUTIONS,
   DAY_NAMES,
   DAY_SHORT,
+  M2_NOTES,
+  M2_WEEKS,
   PHASE1_DAYS,
   PHASE2_CRITERIA,
-  PHASE_ORDER,
   SESSIONS,
   coreExerciseFor,
   formatTarget,
@@ -17,7 +18,7 @@ import {
   type SessionId,
 } from '../data/routine'
 import { estimateCalories } from '../lib/calories'
-import { daysSince, type AppState } from '../lib/store'
+import { daysSince, m2Week, programOf, weekPlanOf, type AppState } from '../lib/store'
 
 type Props = {
   state: AppState
@@ -32,15 +33,17 @@ type Props = {
 export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, onWeekPlan }: Props) {
   const [now] = useState(() => new Date())
   const today = now.getDay()
-  const plan = planWeek(state.phase, state.weekPlans[weekKey(now)])[today]
+  const isM2 = programOf(state) === 'm2'
+  const weekDef = weekPlanOf(state)
+  const plan = planWeek(weekDef, state.weekPlans[weekKey(now)])[today]
   const [picked, setPicked] = useState<SessionId | undefined>(plan.session)
   const sessionId = picked ?? plan.session
   const pending = (Object.keys(CAUTIONS) as CautionId[]).filter((c) => !state.approvals[c])
   const doneToday = state.history.some(
     (w) => w.sessionId === sessionId && new Date(w.startedAt).toDateString() === now.toDateString(),
   )
-  // La sesión de abdomen es extra: se elige aquí, no entra en el plan semanal
-  const sessionsInPhase: SessionId[] = [...PHASE_ORDER[state.phase], 'abs']
+  // En el Mes 1 la sesión de abdomen es extra; el Mes 2 la deja fuera (flexión de columna)
+  const sessionsInPhase: SessionId[] = isM2 ? weekDef.order : [...weekDef.order, 'abs']
   const coreDone = state.history.some(
     (w) => w.sessionId === 'core' && new Date(w.startedAt).toDateString() === now.toDateString(),
   )
@@ -49,12 +52,19 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
     <div className="space-y-4">
       <header>
         <p className="text-sm text-muted">
-          {DAY_NAMES[today]} · Fase {state.phase}
+          {DAY_NAMES[today]} · {isM2 ? `Mes 2 · Semana ${Math.min(4, m2Week(state, now))} de 4` : `Fase ${state.phase}`}
         </p>
         <h1 className="text-2xl font-bold">Hoy</h1>
       </header>
 
-      {pending.length > 0 && (
+      {isM2 && (
+        <section className="card border-amber-300 bg-amber-50 text-sm dark:border-amber-700 dark:bg-amber-950/40">
+          <p className="font-semibold">⚠️ {M2_NOTES.warning}</p>
+          <p className="mt-1">{M2_NOTES.out}</p>
+        </section>
+      )}
+
+      {!isM2 && pending.length > 0 && (
         <button
           onClick={onOpenSettings}
           className="card block w-full border-amber-300 bg-amber-50 text-left text-sm dark:border-amber-700 dark:bg-amber-950/40"
@@ -114,7 +124,7 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
       )}
 
       <WeekPlanner state={state} now={now} onWeekPlan={onWeekPlan} />
-      <PhaseCard state={state} onPhase2={onPhase2} />
+      {isM2 ? <M2WeekCard state={state} now={now} /> : <PhaseCard state={state} onPhase2={onPhase2} />}
     </div>
   )
 }
@@ -249,9 +259,10 @@ function WeekPlanner({
   const ref = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset * 7)
   const key = weekKey(ref)
   const chosen = state.weekPlans[key]
-  const plan = planWeek(state.phase, chosen)
+  const weekDef = weekPlanOf(state)
+  const plan = planWeek(weekDef, chosen)
   const days = chosen ?? WEEK_ORDER.filter((d) => plan[d].session)
-  const missing = missingSessions(state.phase, chosen)
+  const missing = missingSessions(weekDef, chosen)
   const monday = new Date(`${key}T00:00:00`)
   const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6)
   const today = offset === 0 ? now.getDay() : -1
@@ -264,7 +275,7 @@ function WeekPlanner({
   return (
     <section className="card">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="font-semibold">Semana (Fase {state.phase})</h3>
+        <h3 className="font-semibold">Semana ({weekDef.label})</h3>
         <button className="text-sm font-medium text-emerald-700 dark:text-emerald-400" onClick={() => setEditing((v) => !v)}>
           {editing ? 'Listo' : 'Elegir días'}
         </button>
@@ -300,7 +311,7 @@ function WeekPlanner({
             ))}
           </div>
           <p className="mt-2 text-xs text-muted">
-            Las sesiones se reparten en orden ({PHASE_ORDER[state.phase].map((id) => SESSIONS[id].name).join(', ')}),
+            Las sesiones se reparten en orden ({weekDef.order.map((id) => SESSIONS[id].name).join(', ')}),
             alternando tren superior e inferior.
           </p>
           {chosen && (
@@ -310,6 +321,8 @@ function WeekPlanner({
           )}
         </div>
       )}
+
+      {programOf(state) === 'm2' && <p className="mt-2 text-xs text-muted">{M2_NOTES.functional}</p>}
 
       {missing.length > 0 && (
         <p className="mt-3 rounded-lg bg-amber-50 p-2 text-sm dark:bg-amber-950/40">
@@ -331,6 +344,32 @@ function WeekPlanner({
           )
         })}
       </ul>
+    </section>
+  )
+}
+
+function M2WeekCard({ state, now }: { state: AppState; now: Date }) {
+  const week = m2Week(state, now)
+  return (
+    <section className="card">
+      <h3 className="font-semibold">Mes 2 · semana por semana</h3>
+      {week > 4 ? (
+        <p className="mt-1 text-sm text-muted">Completaste las 4 semanas del Mes 2. ¡Hora de pedir la actualización!</p>
+      ) : (
+        <p className="mt-1 text-sm">
+          <b>Semana {week}:</b> {M2_WEEKS[week - 1]}
+        </p>
+      )}
+      <ol className="mt-3 space-y-1 text-sm">
+        {M2_WEEKS.map((w, i) => (
+          <li key={w} className={i + 1 === week ? 'font-semibold' : 'text-muted'}>
+            {i + 1}. {w}
+          </li>
+        ))}
+      </ol>
+      <p className="mt-2 text-xs text-muted">
+        Las semanas cuentan desde tu primera sesión del Mes 2. En la semana 4 la app pone 2 series por ejercicio.
+      </p>
     </section>
   )
 }

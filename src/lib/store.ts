@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
+  DEFAULT_PROGRAM,
+  M2_ORDER,
   SESSIONS,
   coreExerciseFor,
+  weekPlanFor,
   resolveExercises,
   type Approvals,
   type Exercise,
+  type ProgramId,
   type Swaps,
   type SessionId,
   type Target,
@@ -49,6 +53,8 @@ export type AppState = {
   weekPlans: Record<string, number[]>
   /** Peso corporal en kg, para estimar calorías */
   bodyWeight?: number
+  /** Programa elegido (Mes 1, Mes 2). Sin valor se usa el programa actual */
+  program?: ProgramId
   history: WorkoutLog[]
   active?: WorkoutLog
 }
@@ -91,13 +97,36 @@ export function useAppState() {
   return [state, update] as const
 }
 
+export function programOf(state: AppState): ProgramId {
+  return state.program ?? DEFAULT_PROGRAM
+}
+
+/** Plan semanal en uso (orden de sesiones y días por defecto) */
+export function weekPlanOf(state: AppState) {
+  return weekPlanFor(programOf(state), state.phase)
+}
+
+/**
+ * Semana del Mes 2 (1-4) contando desde la primera sesión del Mes 2 terminada.
+ * Antes de empezar es la semana 1; después de la 4 devuelve 5 (mes completo).
+ */
+export function m2Week(state: AppState, now = new Date()) {
+  const first = state.history.find((w) => M2_ORDER.includes(w.sessionId) && w.finishedAt)
+  if (!first) return 1
+  const days = Math.floor((now.getTime() - new Date(first.startedAt).getTime()) / 86_400_000)
+  return Math.min(5, Math.floor(days / 7) + 1)
+}
+
 export function newWorkout(state: AppState, sessionId: SessionId, warmupItems: number): WorkoutLog {
   const session = SESSIONS[sessionId]
+  // Mes 2, semana 4: descarga, 2 series por ejercicio con las mismas cargas
+  const deload = M2_ORDER.includes(sessionId) && m2Week(state) === 4
   // El core diario es un solo ejercicio que rota cada día
-  const active =
+  const active = (
     sessionId === 'core'
       ? [coreExerciseFor(new Date())]
       : resolveExercises(session, state.approvals, state.swaps).active
+  ).map((ex) => (deload ? { ...ex, sets: Math.min(ex.sets, 2) } : ex))
   return {
     id: crypto.randomUUID?.() ?? String(Date.now()),
     sessionId,
@@ -105,7 +134,14 @@ export function newWorkout(state: AppState, sessionId: SessionId, warmupItems: n
     phase: state.phase,
     startedAt: new Date().toISOString(),
     warmup: Array(warmupItems).fill(false),
-    exercises: active.map((ex) => exerciseLog(ex, state.lastLevels)),
+    exercises: active.map((ex) => {
+      const log = exerciseLog(ex, state.lastLevels)
+      // Al empezar el Mes 2, los ejercicios con nivel nuevo arrancan desde ese nivel
+      const doneInM2 = state.history.some(
+        (w) => M2_ORDER.includes(w.sessionId) && w.exercises.some((e) => e.exerciseId === ex.id),
+      )
+      return ex.startLevel && M2_ORDER.includes(sessionId) && !doneInM2 ? { ...log, level: ex.startLevel } : log
+    }),
   }
 }
 
