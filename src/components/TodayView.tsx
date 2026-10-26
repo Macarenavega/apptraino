@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   CAUTIONS,
   DAY_NAMES,
@@ -37,6 +37,8 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
   const weekDef = weekPlanOf(state)
   const plan = planWeek(weekDef, state.weekPlans[weekKey(now)])[today]
   const [picked, setPicked] = useState<SessionId | undefined>(plan.session)
+  // Cada toque en "Elegir días" de la cabecera abre el selector de la tarjeta Semana
+  const [openPlanner, setOpenPlanner] = useState(0)
   const sessionId = picked ?? plan.session
   const pending = (Object.keys(CAUTIONS) as CautionId[]).filter((c) => !state.approvals[c])
   const doneToday = state.history.some(
@@ -54,7 +56,12 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         <p className="text-sm text-muted">
           {DAY_NAMES[today]} · {isM2 ? `Mes 2 · Semana ${Math.min(4, m2Week(state, now))} de 4` : `Fase ${state.phase}`}
         </p>
-        <h1 className="text-2xl font-bold">Hoy</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold">Hoy</h1>
+          <button className="btn-ghost px-3 py-1.5 text-sm" onClick={() => setOpenPlanner((n) => n + 1)}>
+            📅 Elegir días
+          </button>
+        </div>
       </header>
 
       {isM2 && (
@@ -123,7 +130,7 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         </section>
       )}
 
-      <WeekPlanner state={state} now={now} onWeekPlan={onWeekPlan} />
+      <WeekPlanner state={state} now={now} onWeekPlan={onWeekPlan} openRequest={openPlanner} />
       {isM2 ? <M2WeekCard state={state} now={now} /> : <PhaseCard state={state} onPhase2={onPhase2} />}
     </div>
   )
@@ -249,13 +256,28 @@ function WeekPlanner({
   state,
   now,
   onWeekPlan,
+  openRequest,
 }: {
   state: AppState
   now: Date
   onWeekPlan: (key: string, days: number[] | undefined) => void
+  /** Cambia cuando se pide abrir el selector desde fuera de la tarjeta */
+  openRequest: number
 }) {
   const [offset, setOffset] = useState(0)
-  const [editing, setEditing] = useState(false)
+  const [editingLocal, setEditingLocal] = useState(false)
+  // Pedido desde la cabecera: queda abierto hasta tocar "Listo"
+  const [closedRequest, setClosedRequest] = useState(0)
+  const editing = editingLocal || openRequest > closedRequest
+  const setEditing = (fn: (v: boolean) => boolean) => {
+    const next = fn(editing)
+    setEditingLocal(next)
+    if (!next) setClosedRequest(openRequest)
+  }
+  const cardRef = useRef<HTMLElement>(null)
+  useEffect(() => {
+    if (openRequest > 0) cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [openRequest])
   const ref = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset * 7)
   const key = weekKey(ref)
   const chosen = state.weekPlans[key]
@@ -273,7 +295,7 @@ function WeekPlanner({
   }
 
   return (
-    <section className="card">
+    <section ref={cardRef} className="card scroll-mt-4">
       <div className="flex items-center justify-between gap-2">
         <h3 className="font-semibold">Semana ({weekDef.label})</h3>
         <button className="text-sm font-medium text-emerald-700 dark:text-emerald-400" onClick={() => setEditing((v) => !v)}>
