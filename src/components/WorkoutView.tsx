@@ -10,12 +10,14 @@ type Props = {
   timer: Timer
   onChange: (fn: (w: WorkoutLog) => WorkoutLog) => void
   onFinish: () => void
+  /** Volver a la pantalla Hoy sin cerrar el entrenamiento */
+  onBack: () => void
   onDiscard: () => void
   /** Cambia el ejercicio de la posición indicada por otra opción de su grupo */
   onSwap: (index: number, exercise: Exercise, group: string) => void
 }
 
-export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onDiscard, onSwap }: Props) {
+export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onDiscard, onSwap, onBack }: Props) {
   const session = SESSIONS[workout.sessionId]
   const { blocked } = resolveExercises(session, approvals)
   const totalSets = workout.exercises.reduce((n, e) => n + e.sets.length, 0)
@@ -74,6 +76,9 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
 
   return (
     <div className="space-y-4">
+      <button className="text-sm font-medium text-muted" onClick={onBack}>
+        ← Hoy
+      </button>
       <header className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-[32px] leading-tight font-light">{workout.sessionName}</h1>

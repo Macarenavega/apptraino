@@ -21,7 +21,7 @@ import {
   type SessionId,
 } from '../data/routine'
 import { estimateCalories } from '../lib/calories'
-import { daysSince, m2Week, programOf, weekPlanOf, type AppState } from '../lib/store'
+import { coreDoneToday, coreFor, daysSince, m2Week, programOf, weekPlanOf, type AppState } from '../lib/store'
 
 type Props = {
   state: AppState
@@ -30,11 +30,13 @@ type Props = {
   onResume: () => void
   onPhase2: () => void
   onOpenSettings: () => void
+  /** Elige otro ejercicio de core para hoy */
+  onCorePick: (id: string) => void
   /** Guarda los días elegidos de una semana (undefined = volver al plan por defecto) */
   onWeekPlan: (key: string, days: number[] | undefined) => void
 }
 
-export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, onWeekPlan }: Props) {
+export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, onWeekPlan, onCorePick }: Props) {
   const [now] = useState(() => new Date())
   const today = now.getDay()
   const isM2 = programOf(state) === 'm2'
@@ -50,12 +52,8 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
   )
   // En el Mes 1 la sesión de abdomen es extra; el Mes 2 la deja fuera (flexión de columna)
   const sessionsInPhase: SessionId[] = isM2 ? weekDef.order : [...weekDef.order, 'abs']
-  // Core del día: el de la rotación, salvo que elija otro
-  const [coreId, setCoreId] = useState<string>()
-  const coreEx = CORE_EXERCISES.find((e) => e.id === coreId) ?? coreExerciseFor(now)
-  const coreDone = state.history.some(
-    (w) => w.sessionId === 'core' && new Date(w.startedAt).toDateString() === now.toDateString(),
-  )
+  const coreEx = coreFor(state, now)
+  const coreDone = coreDoneToday(state, now)
 
   return (
     <div className="space-y-4">
@@ -95,7 +93,14 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         </button>
       )}
 
-      {!state.active && <CoreCard now={now} ex={coreEx} onPick={setCoreId} done={coreDone} onStart={() => onStart('core', coreEx.id)} />}
+      <CoreCard
+        now={now}
+        ex={coreEx}
+        onPick={onCorePick}
+        done={coreDone}
+        busy={!!state.active}
+        onStart={() => onStart('core', coreEx.id)}
+      />
 
       {!state.active && sessionId && <SessionCard state={state} id={sessionId} />}
 
@@ -347,12 +352,15 @@ function CoreCard({
   ex,
   onPick,
   done,
+  busy,
   onStart,
 }: {
   now: Date
   ex: Exercise
   onPick: (id: string) => void
   done: boolean
+  /** Hay un entrenamiento en curso: el core se hace al terminarlo */
+  busy: boolean
   onStart: () => void
 }) {
   const [choosing, setChoosing] = useState(false)
@@ -376,8 +384,8 @@ function CoreCard({
         </div>
       </div>
       <div className="mt-4 flex gap-2">
-        <button className={`${done ? 'btn-ghost' : 'btn-primary'} flex-1 py-3`} onClick={onStart}>
-          {done ? 'Repetir el core' : 'Hacer el core'}
+        <button className={`${done || busy ? 'btn-ghost' : 'btn-primary'} flex-1 py-3`} disabled={busy} onClick={onStart}>
+          {busy ? 'Al terminar' : done ? 'Repetir el core' : 'Hacer el core'}
         </button>
         <button className="btn-ghost shrink-0 py-3" aria-expanded={choosing} onClick={() => setChoosing((v) => !v)}>
           ⇄ Cambiar
@@ -409,7 +417,9 @@ function CoreCard({
         </ul>
       )}
       <p className="mt-3 text-xs text-muted">
-        Uno por día, también los de descanso. Si no te apetece el de hoy, cámbialo por cualquiera de los otros.
+        {busy
+          ? 'Termina tu entrenamiento y hazlo después (también aparece en el resumen).'
+          : 'Uno por día, también los de descanso. Si no te apetece el de hoy, cámbialo por cualquiera de los otros.'}
       </p>
     </section>
   )

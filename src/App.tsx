@@ -6,7 +6,7 @@ import { TimerBar } from './components/TimerBar'
 import { TodayView } from './components/TodayView'
 import { WorkoutView } from './components/WorkoutView'
 import { CORE_GROUP, WARMUP } from './data/routine'
-import { exerciseLog, newWorkout, useAppState } from './lib/store'
+import { coreDoneToday, coreFor, exerciseLog, newWorkout, useAppState } from './lib/store'
 import { unlockAudio, useTimer } from './lib/timer'
 
 type Tab = 'today' | 'history' | 'settings'
@@ -35,6 +35,20 @@ export default function App() {
               }))
             }
             onClose={() => setSummaryId(null)}
+            core={
+              summary.sessionId === 'core' || coreDoneToday(state)
+                ? undefined
+                : {
+                    name: coreFor(state).name,
+                    onStart: () => {
+                      const coreId = coreFor(state).id
+                      setSummaryId(null)
+                      unlockAudio()
+                      update((s) => ({ ...s, active: newWorkout(s, 'core', 0, coreId) }))
+                      setInWorkout(true)
+                    },
+                  }
+            }
           />
         ) : tab === 'today' && inWorkout && state.active ? (
           <WorkoutView
@@ -60,6 +74,7 @@ export default function App() {
                 return { ...s, swaps, active: { ...s.active, exercises } }
               })
             }
+            onBack={() => setInWorkout(false)}
             onFinish={() => {
               update((s) => {
                 if (!s.active) return s
@@ -90,6 +105,7 @@ export default function App() {
             onResume={() => setInWorkout(true)}
             onPhase2={() => update((s) => ({ ...s, phase: 2 }))}
             onOpenSettings={() => setTab('settings')}
+            onCorePick={(id) => update((s) => ({ ...s, coreChoice: { date: new Date().toDateString(), id } }))}
             onWeekPlan={(key, days) =>
               update((s) => {
                 const weekPlans = { ...s.weekPlans }

@@ -7,12 +7,14 @@ type Props = {
   bodyWeight?: number
   onWeight: (kg: number) => void
   onClose: () => void
+  /** Core del día pendiente (no se muestra si ya se hizo o si esta sesión era el core) */
+  core?: { name: string; onStart: () => void }
 }
 
 const fmtKcal = (n: number) => Math.round(n).toLocaleString('es')
 
 /** Resumen al terminar una sesión: calorías estimadas, duración y series */
-export function SummaryView({ workout, bodyWeight, onWeight, onClose }: Props) {
+export function SummaryView({ workout, bodyWeight, onWeight, onClose, core }: Props) {
   const kg = workout.bodyWeight ?? bodyWeight
   const total = workout.exercises.reduce((n, e) => n + e.sets.length, 0)
   const done = workout.exercises.reduce((n, e) => n + e.sets.filter((s) => s.done).length, 0)
@@ -73,7 +75,16 @@ export function SummaryView({ workout, bodyWeight, onWeight, onClose }: Props) {
         <WeightPrompt onWeight={onWeight} />
       )}
 
-      <button className="btn-primary w-full py-4 text-lg" onClick={onClose}>
+      {core && (
+        <section className="card">
+          <p className="eyebrow text-emerald-600 dark:text-emerald-400">Te falta el core del día · ~5'</p>
+          <h2 className="mt-0.5 font-medium">{core.name}</h2>
+          <button className="btn-primary mt-3 w-full py-3" onClick={core.onStart}>
+            Hacer el core ahora
+          </button>
+        </section>
+      )}
+      <button className={`${core ? 'btn-ghost' : 'btn-primary'} w-full py-4 text-lg`} onClick={onClose}>
         Listo
       </button>
     </div>

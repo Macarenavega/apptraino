@@ -58,6 +58,8 @@ export type AppState = {
   program?: ProgramId
   history: WorkoutLog[]
   active?: WorkoutLog
+  /** Ejercicio de core elegido para un día (si no, toca el de la rotación) */
+  coreChoice?: { date: string; id: string }
 }
 
 const KEY = 'apptraino:v1'
@@ -96,6 +98,18 @@ export function useAppState() {
   useEffect(() => save(state), [state])
   const update = useCallback((fn: (s: AppState) => AppState) => setState(fn), [])
   return [state, update] as const
+}
+
+/** Ejercicio de core del día: el elegido para hoy o, si no, el de la rotación */
+export function coreFor(state: AppState, now = new Date()) {
+  const c = state.coreChoice
+  const chosen = c && c.date === now.toDateString() ? CORE_EXERCISES.find((e) => e.id === c.id) : undefined
+  return chosen ?? coreExerciseFor(now)
+}
+
+/** Si ya se hizo el core hoy */
+export function coreDoneToday(state: AppState, now = new Date()) {
+  return state.history.some((w) => w.sessionId === 'core' && new Date(w.startedAt).toDateString() === now.toDateString())
 }
 
 export function programOf(state: AppState): ProgramId {
