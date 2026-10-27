@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SESSIONS, WARMUP, findSlot, formatTarget, resolveExercises, type Approvals, type Exercise } from '../data/routine'
+import { CORE_GROUP, SESSIONS, WARMUP, findSlot, formatTarget, resolveExercises, type Approvals, type Exercise } from '../data/routine'
 import type { ExerciseLog, WorkoutLog } from '../lib/store'
 import { ExerciseGuide } from './ExerciseGuide'
 import type { Timer } from '../lib/timer'
@@ -146,7 +146,9 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
             {meta?.swappedFrom && <p className="text-xs text-muted">En lugar de: {meta.swappedFrom}</p>}
             {swap && swapping === ei && (
               <div className="mt-3 rounded-xl border border-line bg-page p-3">
-                <p className="text-sm font-medium">¿No tienes el material? Elige otra opción:</p>
+                <p className="text-sm font-medium">
+                  {swap.group === CORE_GROUP ? 'Elige otro ejercicio de core:' : '¿No tienes el material? Elige otra opción:'}
+                </p>
                 <ul className="mt-2 space-y-2">
                   {swap.options.map((opt, oi) => {
                     const current = opt.id === ex.exerciseId
@@ -172,7 +174,11 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
                     )
                   })}
                 </ul>
-                <p className="mt-2 text-xs text-muted">La app recordará tu elección para las próximas sesiones.</p>
+                <p className="mt-2 text-xs text-muted">
+                  {swap.group === CORE_GROUP
+                    ? 'El cambio vale solo para hoy.'
+                    : 'La app recordará tu elección para las próximas sesiones.'}
+                </p>
               </div>
             )}
             <p className="mt-1 text-sm text-muted">

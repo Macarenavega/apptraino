@@ -35,6 +35,8 @@ export type Alternative = {
   note?: string
   levelHint?: string
   perSide?: boolean
+  /** Objetivo propio cuando difiere del original (ej: plancha en segundos en lugar de reps) */
+  target?: Target
 }
 
 export type SessionId =
@@ -908,11 +910,18 @@ const ALTERNATIVES: Record<string, { group: string; options: Alternative[] }> = 
   'mov-caminata': { group: 'caminata', options: cardioOptions },
 }
 
+/**
+ * Ejercicios de core que se pueden cambiar por cualquiera de los del core diario.
+ * Este cambio vale solo para la sesión en curso: no se guarda.
+ */
+export const CORE_GROUP = 'core'
+const CORE_SLOTS = new Set(['dead-bug', 'plancha-rodillas', 'plancha-inclinada', ...CORE_EXERCISES.map((c) => c.id)])
+
 /** Elección del usuario por grupo: id de la alternativa */
 export type Swaps = Record<string, string>
 
 function toExercise(slot: Exercise, alt: Alternative): Exercise {
-  const target = alt.perSide && slot.target.kind === 'reps' ? { ...slot.target, perSide: true } : slot.target
+  const target = alt.target ?? (alt.perSide && slot.target.kind === 'reps' ? { ...slot.target, perSide: true } : slot.target)
   return {
     ...slot,
     id: alt.id,
@@ -928,6 +937,18 @@ function toExercise(slot: Exercise, alt: Alternative): Exercise {
 
 /** Opciones para un ejercicio: el original primero y luego sus alternativas */
 export function swapOptions(slot: Exercise) {
+  if (CORE_SLOTS.has(slot.id)) {
+    const others = CORE_EXERCISES.filter((c) => c.name !== slot.name && c.id !== slot.id)
+    return {
+      group: CORE_GROUP,
+      options: [
+        slot,
+        ...others.map((c) =>
+          toExercise(slot, { id: c.id, name: c.name, note: c.note, levelHint: c.levelHint, target: c.target }),
+        ),
+      ],
+    }
+  }
   const entry = ALTERNATIVES[slot.id]
   if (!entry) return undefined
   return { group: entry.group, options: [slot, ...entry.options.map((a) => toExercise(slot, a))] }
@@ -958,9 +979,12 @@ export function resolveExercises(session: Session, approvals: Approvals, swaps: 
 
 /** Busca el ejercicio original (y sus opciones) del que salió un ejercicio de la sesión */
 export function findSlot(session: Session, approvals: Approvals, exerciseId: string) {
-  for (const slot of resolveExercises(session, approvals).slots) {
+  const { slots } = resolveExercises(session, approvals)
+  // Primero el ejercicio tal cual (en el core diario todos son a la vez original y alternativa)
+  const exact = slots.find((s) => s.id === exerciseId)
+  if (exact) return { slot: exact, exercise: exact, swap: swapOptions(exact) }
+  for (const slot of slots) {
     const sw = swapOptions(slot)
-    if (slot.id === exerciseId) return { slot, exercise: slot, swap: sw }
     const exercise = sw?.options.find((o) => o.id === exerciseId)
     if (exercise) return { slot, exercise, swap: sw }
   }

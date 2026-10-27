@@ -5,7 +5,7 @@ import { SummaryView } from './components/SummaryView'
 import { TimerBar } from './components/TimerBar'
 import { TodayView } from './components/TodayView'
 import { WorkoutView } from './components/WorkoutView'
-import { WARMUP } from './data/routine'
+import { CORE_GROUP, WARMUP } from './data/routine'
 import { exerciseLog, newWorkout, useAppState } from './lib/store'
 import { unlockAudio, useTimer } from './lib/timer'
 
@@ -51,8 +51,10 @@ export default function App() {
               update((s) => {
                 if (!s.active) return s
                 const swaps = { ...s.swaps }
-                // Volver al original borra la elección
-                if (exercise.swappedFrom) swaps[group] = exercise.id
+                // Volver al original borra la elección; los cambios de core valen solo para hoy
+                if (group === CORE_GROUP) {
+                  // no se recuerda
+                } else if (exercise.swappedFrom) swaps[group] = exercise.id
                 else delete swaps[group]
                 const exercises = s.active.exercises.map((e, i) => (i === index ? exerciseLog(exercise, s.lastLevels) : e))
                 return { ...s, swaps, active: { ...s.active, exercises } }
