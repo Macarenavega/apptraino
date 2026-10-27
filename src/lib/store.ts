@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
+  CORE_EXERCISES,
   DEFAULT_PROGRAM,
   M2_ORDER,
   SESSIONS,
@@ -117,14 +118,14 @@ export function m2Week(state: AppState, now = new Date()) {
   return Math.min(5, Math.floor(days / 7) + 1)
 }
 
-export function newWorkout(state: AppState, sessionId: SessionId, warmupItems: number): WorkoutLog {
+export function newWorkout(state: AppState, sessionId: SessionId, warmupItems: number, coreId?: string): WorkoutLog {
   const session = SESSIONS[sessionId]
   // Mes 2, semana 4: descarga, 2 series por ejercicio con las mismas cargas
   const deload = M2_ORDER.includes(sessionId) && m2Week(state) === 4
   // El core diario es un solo ejercicio que rota cada día
   const active = (
     sessionId === 'core'
-      ? [coreExerciseFor(new Date())]
+      ? [CORE_EXERCISES.find((e) => e.id === coreId) ?? coreExerciseFor(new Date())]
       : resolveExercises(session, state.approvals, state.swaps).active
   ).map((ex) => (deload ? { ...ex, sets: Math.min(ex.sets, 2) } : ex))
   return {

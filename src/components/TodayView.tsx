@@ -8,6 +8,7 @@ import {
   PHASE1_DAYS,
   PHASE2_CRITERIA,
   SESSIONS,
+  CORE_EXERCISES,
   EXERCISE_IMAGES,
   coreExerciseFor,
   formatTarget,
@@ -16,6 +17,7 @@ import {
   resolveExercises,
   weekKey,
   type CautionId,
+  type Exercise,
   type SessionId,
 } from '../data/routine'
 import { estimateCalories } from '../lib/calories'
@@ -23,7 +25,8 @@ import { daysSince, m2Week, programOf, weekPlanOf, type AppState } from '../lib/
 
 type Props = {
   state: AppState
-  onStart: (id: SessionId) => void
+  /** coreId: ejercicio de core elegido (si no, el que toca por rotación) */
+  onStart: (id: SessionId, coreId?: string) => void
   onResume: () => void
   onPhase2: () => void
   onOpenSettings: () => void
@@ -47,6 +50,9 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
   )
   // En el Mes 1 la sesión de abdomen es extra; el Mes 2 la deja fuera (flexión de columna)
   const sessionsInPhase: SessionId[] = isM2 ? weekDef.order : [...weekDef.order, 'abs']
+  // Core del día: el de la rotación, salvo que elija otro
+  const [coreId, setCoreId] = useState<string>()
+  const coreEx = CORE_EXERCISES.find((e) => e.id === coreId) ?? coreExerciseFor(now)
   const coreDone = state.history.some(
     (w) => w.sessionId === 'core' && new Date(w.startedAt).toDateString() === now.toDateString(),
   )
@@ -63,7 +69,7 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         label={`${DAY_NAMES[today]} · ${isM2 ? `Mes 2 · Semana ${Math.min(4, m2Week(state, now))} de 4` : `Fase ${state.phase}`}`}
         onStart={() => sessionId && onStart(sessionId)}
         coreDone={coreDone}
-        onCore={() => onStart('core')}
+        onCore={() => onStart('core', coreEx.id)}
         onResume={onResume}
         onPlanDays={() => setOpenPlanner((n) => n + 1)}
       />
@@ -89,7 +95,7 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         </button>
       )}
 
-      {!state.active && <CoreCard now={now} done={coreDone} onStart={() => onStart('core')} />}
+      {!state.active && <CoreCard now={now} ex={coreEx} onPick={setCoreId} done={coreDone} onStart={() => onStart('core', coreEx.id)} />}
 
       {!state.active && sessionId && <SessionCard state={state} id={sessionId} />}
 
@@ -336,11 +342,22 @@ function DayCalories({ state, now, onOpenSettings }: { state: AppState; now: Dat
   )
 }
 
-function CoreCard({ now, done, onStart }: { now: Date; done: boolean; onStart: () => void }) {
-  const ex = coreExerciseFor(now)
+function CoreCard({
+  now,
+  ex,
+  onPick,
+  done,
+  onStart,
+}: {
+  now: Date
+  ex: Exercise
+  onPick: (id: string) => void
+  done: boolean
+  onStart: () => void
+}) {
+  const [choosing, setChoosing] = useState(false)
   const img = EXERCISE_IMAGES[ex.id]
-  // Los próximos días de la rotación, para saber qué viene
-  const next = [1, 2].map((n) => coreExerciseFor(new Date(now.getFullYear(), now.getMonth(), now.getDate() + n)))
+  const rotation = coreExerciseFor(now)
   return (
     <section className="card">
       <div className="flex items-center gap-4">
@@ -355,16 +372,44 @@ function CoreCard({ now, done, onStart }: { now: Date; done: boolean; onStart: (
         <div className="min-w-0 flex-1">
           <p className="eyebrow text-emerald-600 dark:text-emerald-400">Core del día {done && '· hecho ✓'}</p>
           <h2 className="mt-0.5 font-medium leading-snug">{ex.name}</h2>
-          <p className="text-sm text-muted tabular-nums">
-            {formatTarget(ex.target, ex.sets)} · ~5'
-          </p>
+          <p className="text-sm text-muted tabular-nums">{formatTarget(ex.target, ex.sets)} · ~5'</p>
         </div>
       </div>
-      <button className={`${done ? 'btn-ghost' : 'btn-primary'} mt-4 w-full py-3`} onClick={onStart}>
-        {done ? 'Repetir el core' : 'Hacer el core'}
-      </button>
+      <div className="mt-4 flex gap-2">
+        <button className={`${done ? 'btn-ghost' : 'btn-primary'} flex-1 py-3`} onClick={onStart}>
+          {done ? 'Repetir el core' : 'Hacer el core'}
+        </button>
+        <button className="btn-ghost shrink-0 py-3" aria-expanded={choosing} onClick={() => setChoosing((v) => !v)}>
+          ⇄ Cambiar
+        </button>
+      </div>
+      {choosing && (
+        <ul className="mt-3 divide-y divide-line rounded-2xl border border-line">
+          {CORE_EXERCISES.map((c) => (
+            <li key={c.id}>
+              <button
+                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm"
+                aria-pressed={c.id === ex.id}
+                onClick={() => {
+                  onPick(c.id)
+                  setChoosing(false)
+                }}
+              >
+                <span>
+                  <span className={c.id === ex.id ? 'font-semibold' : ''}>{c.name}</span>
+                  <span className="block text-xs text-muted tabular-nums">
+                    {formatTarget(c.target, c.sets)}
+                    {c.id === rotation.id && ' · el que toca hoy'}
+                  </span>
+                </span>
+                {c.id === ex.id && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
       <p className="mt-3 text-xs text-muted">
-        Uno por día, también los de descanso. Mañana: {next[0].name.split(' (')[0]} · pasado: {next[1].name.split(' (')[0]}.
+        Uno por día, también los de descanso. Si no te apetece el de hoy, cámbialo por cualquiera de los otros.
       </p>
     </section>
   )

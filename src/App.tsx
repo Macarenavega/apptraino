@@ -80,9 +80,9 @@ export default function App() {
         ) : tab === 'today' ? (
           <TodayView
             state={state}
-            onStart={(id) => {
+            onStart={(id, coreId) => {
               unlockAudio()
-              update((s) => ({ ...s, active: newWorkout(s, id, id === 'core' ? 0 : WARMUP.length) }))
+              update((s) => ({ ...s, active: newWorkout(s, id, id === 'core' ? 0 : WARMUP.length, coreId) }))
               setInWorkout(true)
             }}
             onResume={() => setInWorkout(true)}
