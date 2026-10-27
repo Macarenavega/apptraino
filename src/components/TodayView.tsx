@@ -89,9 +89,10 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         </button>
       )}
 
+      {!state.active && <CoreCard now={now} done={coreDone} onStart={() => onStart('core')} />}
+
       {!state.active && sessionId && <SessionCard state={state} id={sessionId} />}
 
-      {!state.active && <CoreCard now={now} done={coreDone} onStart={() => onStart('core')} />}
 
       <DayCalories state={state} now={now} onOpenSettings={onOpenSettings} />
 
@@ -337,21 +338,34 @@ function DayCalories({ state, now, onOpenSettings }: { state: AppState; now: Dat
 
 function CoreCard({ now, done, onStart }: { now: Date; done: boolean; onStart: () => void }) {
   const ex = coreExerciseFor(now)
+  const img = EXERCISE_IMAGES[ex.id]
+  // Los próximos días de la rotación, para saber qué viene
+  const next = [1, 2].map((n) => coreExerciseFor(new Date(now.getFullYear(), now.getMonth(), now.getDate() + n)))
   return (
     <section className="card">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm text-muted">Core diario · ~5'</p>
-          <h2 className="font-semibold leading-snug">
-            {ex.name} {done && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
-          </h2>
-          <p className="text-sm text-muted tabular-nums">{formatTarget(ex.target, ex.sets)}</p>
+      <div className="flex items-center gap-4">
+        {img && (
+          <img
+            src={`${import.meta.env.BASE_URL}exercises/${img.folder}/0.jpg`}
+            alt=""
+            className="size-20 shrink-0 rounded-md object-cover grayscale"
+            aria-hidden
+          />
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="eyebrow text-emerald-600 dark:text-emerald-400">Core del día {done && '· hecho ✓'}</p>
+          <h2 className="mt-0.5 font-medium leading-snug">{ex.name}</h2>
+          <p className="text-sm text-muted tabular-nums">
+            {formatTarget(ex.target, ex.sets)} · ~5'
+          </p>
         </div>
-        <button className={done ? 'btn-ghost shrink-0' : 'btn-primary shrink-0'} onClick={onStart}>
-          {done ? 'Repetir' : 'Hacer'}
-        </button>
       </div>
-      <p className="mt-2 text-xs text-muted">Todos los días, también los de descanso. Cambia de ejercicio cada día.</p>
+      <button className={`${done ? 'btn-ghost' : 'btn-primary'} mt-4 w-full py-3`} onClick={onStart}>
+        {done ? 'Repetir el core' : 'Hacer el core'}
+      </button>
+      <p className="mt-3 text-xs text-muted">
+        Uno por día, también los de descanso. Mañana: {next[0].name.split(' (')[0]} · pasado: {next[1].name.split(' (')[0]}.
+      </p>
     </section>
   )
 }
