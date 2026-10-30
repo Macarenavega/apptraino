@@ -3,8 +3,8 @@ import { HOWTO, youtubeSearch } from '../data/howto'
 import { EXERCISE_IMAGES } from '../data/routine'
 
 /** "Cómo se hace": pasos breves, imágenes de referencia (si hay) y búsqueda de video */
-export function ExerciseGuide({ exerciseId }: { exerciseId: string }) {
-  const [open, setOpen] = useState(false)
+export function ExerciseGuide({ exerciseId, defaultOpen = false }: { exerciseId: string; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen)
   const howto = HOWTO[exerciseId]
   const img = EXERCISE_IMAGES[exerciseId]
   if (!howto && !img) return null

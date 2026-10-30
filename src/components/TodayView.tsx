@@ -21,6 +21,7 @@ import {
   type SessionId,
 } from '../data/routine'
 import { estimateCalories } from '../lib/calories'
+import { ExerciseGuide } from './ExerciseGuide'
 import { coreDoneToday, coreFor, daysSince, m2Week, programOf, weekPlanOf, type AppState } from '../lib/store'
 
 type Props = {
@@ -475,22 +476,26 @@ function GimeCard({
           </div>
           {blocks.map((b) => (
             <div key={b}>
-              <p className="font-medium">{b}</p>
+              <p className="eyebrow mt-4 border-t border-line pt-4 text-emerald-700 dark:text-emerald-400">{b}</p>
               <ul className="mt-1 divide-y divide-line">
                 {session.exercises
                   .filter((e) => (e.block ?? '') === b)
                   .map((e) => (
-                    <li key={e.id} className="py-2">
+                    <li key={e.id} className="py-3">
                       <div className="flex justify-between gap-3">
-                        <span>{e.name}</span>
+                        <span className="font-medium">{e.name}</span>
                         <span className="shrink-0 text-muted tabular-nums">{formatTarget(e.target, e.sets)}</span>
                       </div>
+                      {e.note && <p className="mt-0.5 text-muted italic">{e.note}</p>}
                       {e.partner && (
-                        <p className="mt-0.5 text-xs text-muted">
-                          <b className="text-emerald-700 dark:text-emerald-400">Tú:</b> {e.partner.me} <b>Gime:</b>{' '}
-                          {e.partner.gime}
-                        </p>
+                        <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-xl bg-page p-3">
+                          <dt className="font-semibold text-emerald-700 dark:text-emerald-400">Tú</dt>
+                          <dd>{e.partner.me}</dd>
+                          <dt className="font-semibold">Gime</dt>
+                          <dd>{e.partner.gime}</dd>
+                        </dl>
                       )}
+                      <ExerciseGuide exerciseId={e.id} defaultOpen />
                     </li>
                   ))}
               </ul>
@@ -503,7 +508,7 @@ function GimeCard({
           {busy ? 'Al terminar' : 'Empezar con Gime'}
         </button>
         <button className="btn-ghost shrink-0 py-3" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
-          {open ? 'Ocultar' : 'Ver rutina'}
+          {open ? 'Ocultar' : 'Ver rutina y fotos'}
         </button>
       </div>
     </section>

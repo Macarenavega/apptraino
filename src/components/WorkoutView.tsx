@@ -212,7 +212,7 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
                 <dd>{meta.partner.gime}</dd>
               </dl>
             )}
-            <ExerciseGuide exerciseId={ex.exerciseId} />
+            <ExerciseGuide exerciseId={ex.exerciseId} defaultOpen={workout.sessionId === 'gime'} />
 
             {meta?.levelHint && (
               <label className="mt-3 block">
