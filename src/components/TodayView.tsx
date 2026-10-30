@@ -102,7 +102,7 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         onStart={() => onStart('core', coreEx.id)}
       />
 
-      <JimeCard state={state} now={now} busy={!!state.active} onStart={() => onStart('jime')} />
+      <GimeCard state={state} now={now} busy={!!state.active} onStart={() => onStart('gime')} />
 
       {!state.active && sessionId && <SessionCard state={state} id={sessionId} />}
 
@@ -427,8 +427,8 @@ function CoreCard({
   )
 }
 
-/** Apartado para entrenar con Jime: clase de funcional para las dos */
-function JimeCard({
+/** Apartado para entrenar con Gime: clase de funcional para las dos */
+function GimeCard({
   state,
   now,
   busy,
@@ -440,14 +440,14 @@ function JimeCard({
   onStart: () => void
 }) {
   const [open, setOpen] = useState(false)
-  const session = SESSIONS.jime
-  const last = [...state.history].reverse().find((w) => w.sessionId === 'jime' && w.finishedAt)
+  const session = SESSIONS.gime
+  const last = [...state.history].reverse().find((w) => w.sessionId === 'gime' && w.finishedAt)
   const blocks = [...new Set(session.exercises.map((e) => e.block ?? ''))]
   return (
     <section className="card">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="eyebrow text-emerald-600 dark:text-emerald-400">Entreno con Jime</p>
+          <p className="eyebrow text-emerald-600 dark:text-emerald-400">Entreno con Gime</p>
           <h2 className="mt-0.5 text-xl font-light">Clase de funcional para dos</h2>
           <p className="text-sm text-muted">
             {session.estimate} · cada una con su versión
@@ -487,8 +487,8 @@ function JimeCard({
                       </div>
                       {e.partner && (
                         <p className="mt-0.5 text-xs text-muted">
-                          <b className="text-emerald-700 dark:text-emerald-400">Tú:</b> {e.partner.me} <b>Jime:</b>{' '}
-                          {e.partner.jime}
+                          <b className="text-emerald-700 dark:text-emerald-400">Tú:</b> {e.partner.me} <b>Gime:</b>{' '}
+                          {e.partner.gime}
                         </p>
                       )}
                     </li>
@@ -500,7 +500,7 @@ function JimeCard({
       )}
       <div className="mt-4 flex gap-2">
         <button className={`${busy ? 'btn-ghost' : 'btn-primary'} flex-1 py-3`} disabled={busy} onClick={onStart}>
-          {busy ? 'Al terminar' : 'Empezar con Jime'}
+          {busy ? 'Al terminar' : 'Empezar con Gime'}
         </button>
         <button className="btn-ghost shrink-0 py-3" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
           {open ? 'Ocultar' : 'Ver rutina'}

@@ -208,8 +208,8 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
               <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-xl bg-page p-3 text-sm">
                 <dt className="font-semibold text-emerald-700 dark:text-emerald-400">Tú</dt>
                 <dd>{meta.partner.me}</dd>
-                <dt className="font-semibold">Jime</dt>
-                <dd>{meta.partner.jime}</dd>
+                <dt className="font-semibold">Gime</dt>
+                <dd>{meta.partner.gime}</dd>
               </dl>
             )}
             <ExerciseGuide exerciseId={ex.exerciseId} />

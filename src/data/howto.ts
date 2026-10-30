@@ -65,7 +65,7 @@ const caminata: HowTo = {
 }
 
 export const HOWTO: Record<string, HowTo> = {
-  'jime-step-up': {
+  'gime-step-up': {
     steps: [
       'De frente al cajón, apoya un pie entero arriba.',
       'Empuja con esa pierna hasta quedar de pie arriba, sin impulsarte con la de abajo.',
@@ -73,7 +73,7 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'step up al cajón con mancuernas técnica',
   },
-  'jime-pushup': {
+  'gime-pushup': {
     steps: [
       'Manos un poco más abiertas que los hombros; cuerpo recto de la cabeza a los pies (o a las rodillas).',
       'Baja el pecho hacia el apoyo con los codos a unos 45° del cuerpo.',
@@ -81,7 +81,7 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'flexiones inclinadas en banco técnica',
   },
-  'jime-rdl': {
+  'gime-rdl': {
     steps: [
       'De pie con una mancuerna en cada mano delante de los muslos, rodillas un poco flexionadas.',
       'Lleva la cadera hacia atrás bajando las mancuernas pegadas a las piernas, espalda recta.',
@@ -89,7 +89,7 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'peso muerto rumano con mancuernas técnica',
   },
-  'jime-bici': {
+  'gime-bici': {
     steps: [
       'Ajusta el asiento: rodilla casi estirada abajo.',
       'Pedalea empujando también con los brazos (en la bici de aire).',
@@ -97,7 +97,7 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'bici de aire assault bike técnica',
   },
-  'jime-granjero': {
+  'gime-granjero': {
     steps: [
       'Agarra una pesa en cada mano con los brazos estirados a los lados.',
       'Camina con pasos cortos, espalda erguida, hombros abajo y abdomen firme.',
@@ -105,7 +105,7 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'paseo del granjero farmer walk técnica',
   },
-  'jime-plancha-pareja': {
+  'gime-plancha-pareja': {
     steps: [
       'Poneos en plancha una frente a la otra, a un brazo de distancia.',
       'Levanta una mano y chócala con la de tu compañera, sin girar la cadera.',
@@ -113,7 +113,7 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'plancha en pareja chocando manos',
   },
-  'jime-pallof': {
+  'gime-pallof': {
     steps: [
       'De lado a la polea a la altura del pecho, agarre con las dos manos pegado al esternón.',
       'Empuja las manos al frente hasta estirar los brazos sin dejar que el cuerpo gire.',
@@ -121,7 +121,7 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'pallof press polea técnica',
   },
-  'jime-dead-bug': {
+  'gime-dead-bug': {
     steps: [
       'Boca arriba, brazos estirados hacia el techo y rodillas dobladas a 90° en el aire.',
       'Pega la espalda baja al suelo y mantenla así todo el ejercicio.',
