@@ -16,6 +16,8 @@ const MET = {
   elliptical: 5.0,
   walk: 3.5,
   bike: 4.8,
+  /** Circuito / clase funcional, esfuerzo moderado */
+  functional: 4.3,
 }
 
 /** Ejercicios de cardio dentro de las sesiones (los minutos se registran en cada serie) */
@@ -66,7 +68,8 @@ export function estimateCalories(w: WorkoutLog, kg: number): CalorieEstimate {
   const parts: CaloriePart[] = []
   let cardioMinutes = 0
 
-  if (w.warmup[0]) {
+  // Solo la rutina propia empieza con la elíptica (las sesiones con calentamiento propio no)
+  if (w.warmup[0] && !SESSIONS[w.sessionId]?.warmup) {
     parts.push({ label: WARMUP_CARDIO.label, minutes: WARMUP_CARDIO.minutes, kcal: kcalOf(WARMUP_CARDIO.met, kg, 10) })
     cardioMinutes += WARMUP_CARDIO.minutes
   }
@@ -88,6 +91,8 @@ export function estimateCalories(w: WorkoutLog, kg: number): CalorieEstimate {
         ? { label: 'Core', met: MET.core }
         : w.sessionId === 'mov'
           ? { label: 'Movilidad', met: MET.mobility }
+          : w.sessionId === 'jime'
+            ? { label: 'Clase funcional', met: MET.functional }
           : { label: 'Fuerza (con descansos)', met: MET.strength }
     parts.unshift({ label: base.label, minutes: restMinutes, kcal: kcalOf(base.met, kg, restMinutes) })
   }

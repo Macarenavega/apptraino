@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { CORE_GROUP, SESSIONS, WARMUP, findSlot, formatTarget, resolveExercises, type Approvals, type Exercise } from '../data/routine'
+import { Fragment, useState } from 'react'
+import { CORE_GROUP, SESSIONS, findSlot, warmupFor, formatTarget, resolveExercises, type Approvals, type Exercise } from '../data/routine'
 import type { ExerciseLog, WorkoutLog } from '../lib/store'
 import { ExerciseGuide } from './ExerciseGuide'
 import type { Timer } from '../lib/timer'
@@ -95,17 +95,27 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
         <div className="h-full bg-emerald-500 transition-[width]" style={{ width: `${(doneSets / totalSets) * 100}%` }} />
       </div>
 
+      {session.intro && (
+        <section className="card bg-stage text-white dark:border-line">
+          <ul className="space-y-1 text-sm">
+            {session.intro.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {workout.warmup.length > 0 && (
       <section className="card">
         <button className="flex w-full items-center justify-between" onClick={() => setShowWarmup((v) => !v)}>
           <span className="font-semibold">
-            Calentamiento (~15') {warmupDone && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
+            Calentamiento ({session.warmup ? "~10'" : "~15'"}) {warmupDone && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
           </span>
           <span className="text-muted">{showWarmup ? '▲' : '▼'}</span>
         </button>
         {showWarmup && (
           <ul className="mt-3 space-y-2">
-            {WARMUP.map((item, i) => (
+            {warmupFor(workout.sessionId).map((item, i) => (
               <li key={item}>
                 <label className="flex items-center gap-3">
                   <input
@@ -130,8 +140,11 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
         const meta = found?.exercise
         const swap = found?.swap
         const allDone = ex.sets.every((s) => s.done)
+        const prevBlock = ei > 0 ? findSlot(session, approvals, workout.exercises[ei - 1].exerciseId)?.exercise.block : undefined
         return (
-          <section key={ex.exerciseId} className={`card ${allDone ? 'opacity-70' : ''}`}>
+          <Fragment key={ex.exerciseId}>
+          {meta?.block && meta.block !== prevBlock && <h3 className="eyebrow px-1 pt-2 text-muted">{meta.block}</h3>}
+          <section className={`card ${allDone ? 'opacity-70' : ''}`}>
             <div className="flex items-start justify-between gap-2">
               <h2 className="font-semibold leading-snug">{ex.name}</h2>
               {allDone ? (
@@ -191,6 +204,14 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
               {ex.rest > 0 && ` · descanso ${ex.rest}"`}
             </p>
             {meta?.note && <p className="mt-1 text-sm text-muted italic">{meta.note}</p>}
+            {meta?.partner && (
+              <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-xl bg-page p-3 text-sm">
+                <dt className="font-semibold text-emerald-700 dark:text-emerald-400">Tú</dt>
+                <dd>{meta.partner.me}</dd>
+                <dt className="font-semibold">Jime</dt>
+                <dd>{meta.partner.jime}</dd>
+              </dl>
+            )}
             <ExerciseGuide exerciseId={ex.exerciseId} />
 
             {meta?.levelHint && (
@@ -226,6 +247,7 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
               onChange={(e) => updateExercise(ei, (x) => ({ ...x, notes: e.target.value }))}
             />
           </section>
+          </Fragment>
         )
       })}
 

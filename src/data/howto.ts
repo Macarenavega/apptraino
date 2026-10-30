@@ -65,6 +65,70 @@ const caminata: HowTo = {
 }
 
 export const HOWTO: Record<string, HowTo> = {
+  'jime-step-up': {
+    steps: [
+      'De frente al cajón, apoya un pie entero arriba.',
+      'Empuja con esa pierna hasta quedar de pie arriba, sin impulsarte con la de abajo.',
+      'Baja despacio con la misma pierna y alterna.',
+    ],
+    video: 'step up al cajón con mancuernas técnica',
+  },
+  'jime-pushup': {
+    steps: [
+      'Manos un poco más abiertas que los hombros; cuerpo recto de la cabeza a los pies (o a las rodillas).',
+      'Baja el pecho hacia el apoyo con los codos a unos 45° del cuerpo.',
+      'Empuja hasta estirar los brazos sin hundir la cadera. Mirada al suelo.',
+    ],
+    video: 'flexiones inclinadas en banco técnica',
+  },
+  'jime-rdl': {
+    steps: [
+      'De pie con una mancuerna en cada mano delante de los muslos, rodillas un poco flexionadas.',
+      'Lleva la cadera hacia atrás bajando las mancuernas pegadas a las piernas, espalda recta.',
+      'Baja hasta notar estiramiento detrás de los muslos y sube apretando el glúteo.',
+    ],
+    video: 'peso muerto rumano con mancuernas técnica',
+  },
+  'jime-bici': {
+    steps: [
+      'Ajusta el asiento: rodilla casi estirada abajo.',
+      'Pedalea empujando también con los brazos (en la bici de aire).',
+      'Mantén el ritmo que te toca durante los 40".',
+    ],
+    video: 'bici de aire assault bike técnica',
+  },
+  'jime-granjero': {
+    steps: [
+      'Agarra una pesa en cada mano con los brazos estirados a los lados.',
+      'Camina con pasos cortos, espalda erguida, hombros abajo y abdomen firme.',
+      'Deja las pesas flexionando las rodillas, no la espalda.',
+    ],
+    video: 'paseo del granjero farmer walk técnica',
+  },
+  'jime-plancha-pareja': {
+    steps: [
+      'Poneos en plancha una frente a la otra, a un brazo de distancia.',
+      'Levanta una mano y chócala con la de tu compañera, sin girar la cadera.',
+      'Alterna manos durante todo el tiempo.',
+    ],
+    video: 'plancha en pareja chocando manos',
+  },
+  'jime-pallof': {
+    steps: [
+      'De lado a la polea a la altura del pecho, agarre con las dos manos pegado al esternón.',
+      'Empuja las manos al frente hasta estirar los brazos sin dejar que el cuerpo gire.',
+      'Aguanta 1" y vuelve. Haz las repeticiones de un lado y cambia.',
+    ],
+    video: 'pallof press polea técnica',
+  },
+  'jime-dead-bug': {
+    steps: [
+      'Boca arriba, brazos estirados hacia el techo y rodillas dobladas a 90° en el aire.',
+      'Pega la espalda baja al suelo y mantenla así todo el ejercicio.',
+      'Estira un brazo hacia atrás y la pierna contraria hacia adelante, despacio.',
+    ],
+    video: 'dead bug ejercicio core',
+  },
   'pushup-inclinado': pushupInclinado,
   'full-pushup-inclinado': pushupInclinado,
   'remo-banda': remoBanda,

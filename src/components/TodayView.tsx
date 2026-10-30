@@ -102,6 +102,8 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         onStart={() => onStart('core', coreEx.id)}
       />
 
+      <JimeCard state={state} now={now} busy={!!state.active} onStart={() => onStart('jime')} />
+
       {!state.active && sessionId && <SessionCard state={state} id={sessionId} />}
 
 
@@ -421,6 +423,89 @@ function CoreCard({
           ? 'Termina tu entrenamiento y hazlo después (también aparece en el resumen).'
           : 'Uno por día, también los de descanso. Si no te apetece el de hoy, cámbialo por cualquiera de los otros.'}
       </p>
+    </section>
+  )
+}
+
+/** Apartado para entrenar con Jime: clase de funcional para las dos */
+function JimeCard({
+  state,
+  now,
+  busy,
+  onStart,
+}: {
+  state: AppState
+  now: Date
+  busy: boolean
+  onStart: () => void
+}) {
+  const [open, setOpen] = useState(false)
+  const session = SESSIONS.jime
+  const last = [...state.history].reverse().find((w) => w.sessionId === 'jime' && w.finishedAt)
+  const blocks = [...new Set(session.exercises.map((e) => e.block ?? ''))]
+  return (
+    <section className="card">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="eyebrow text-emerald-600 dark:text-emerald-400">Entreno con Jime</p>
+          <h2 className="mt-0.5 text-xl font-light">Clase de funcional para dos</h2>
+          <p className="text-sm text-muted">
+            {session.estimate} · cada una con su versión
+            {last && ` · última: ${new Date(last.startedAt).toDateString() === now.toDateString() ? 'hoy' : dateFmt.format(new Date(last.startedAt))}`}
+          </p>
+        </div>
+        <span className="text-3xl" aria-hidden>
+          👯‍♀️
+        </span>
+      </div>
+      {open && (
+        <div className="mt-3 space-y-3 text-sm">
+          {session.intro?.map((t) => (
+            <p key={t} className="text-muted">
+              {t}
+            </p>
+          ))}
+          <div>
+            <p className="font-medium">Calentamiento (~10')</p>
+            <ul className="mt-1 list-disc pl-5 text-muted">
+              {session.warmup?.map((w) => (
+                <li key={w}>{w}</li>
+              ))}
+            </ul>
+          </div>
+          {blocks.map((b) => (
+            <div key={b}>
+              <p className="font-medium">{b}</p>
+              <ul className="mt-1 divide-y divide-line">
+                {session.exercises
+                  .filter((e) => (e.block ?? '') === b)
+                  .map((e) => (
+                    <li key={e.id} className="py-2">
+                      <div className="flex justify-between gap-3">
+                        <span>{e.name}</span>
+                        <span className="shrink-0 text-muted tabular-nums">{formatTarget(e.target, e.sets)}</span>
+                      </div>
+                      {e.partner && (
+                        <p className="mt-0.5 text-xs text-muted">
+                          <b className="text-emerald-700 dark:text-emerald-400">Tú:</b> {e.partner.me} <b>Jime:</b>{' '}
+                          {e.partner.jime}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="mt-4 flex gap-2">
+        <button className={`${busy ? 'btn-ghost' : 'btn-primary'} flex-1 py-3`} disabled={busy} onClick={onStart}>
+          {busy ? 'Al terminar' : 'Empezar con Jime'}
+        </button>
+        <button className="btn-ghost shrink-0 py-3" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          {open ? 'Ocultar' : 'Ver rutina'}
+        </button>
+      </div>
     </section>
   )
 }

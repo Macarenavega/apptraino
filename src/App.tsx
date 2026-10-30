@@ -5,7 +5,7 @@ import { SummaryView } from './components/SummaryView'
 import { TimerBar } from './components/TimerBar'
 import { TodayView } from './components/TodayView'
 import { WorkoutView } from './components/WorkoutView'
-import { CORE_GROUP, WARMUP } from './data/routine'
+import { CORE_GROUP, warmupFor } from './data/routine'
 import { coreDoneToday, coreFor, exerciseLog, newWorkout, useAppState } from './lib/store'
 import { unlockAudio, useTimer } from './lib/timer'
 
@@ -99,7 +99,7 @@ export default function App() {
             state={state}
             onStart={(id, coreId) => {
               unlockAudio()
-              update((s) => ({ ...s, active: newWorkout(s, id, id === 'core' ? 0 : WARMUP.length, coreId) }))
+              update((s) => ({ ...s, active: newWorkout(s, id, id === 'core' ? 0 : warmupFor(id).length, coreId) }))
               setInWorkout(true)
             }}
             onResume={() => setInWorkout(true)}

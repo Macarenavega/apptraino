@@ -26,6 +26,10 @@ export type Exercise = {
   replacement?: Exercise
   /** Nombre del ejercicio original cuando este es un reemplazo elegido */
   swappedFrom?: string
+  /** Bloque de la sesión (en la clase funcional: calentamiento, fuerza, estaciones, core) */
+  block?: string
+  /** Versión para cada una en los entrenos de a dos */
+  partner?: { me: string; jime: string }
 }
 
 /** Ejercicio equivalente para cuando no se tiene el material (hereda series, reps y descanso) */
@@ -48,6 +52,7 @@ export type SessionId =
   | 'mov'
   | 'core'
   | 'abs'
+  | 'jime'
   | 'm2supA'
   | 'm2infA'
   | 'm2supB'
@@ -58,6 +63,10 @@ export type Session = {
   name: string
   estimate?: string
   exercises: Exercise[]
+  /** Calentamiento propio (si no, el de la rutina) */
+  warmup?: string[]
+  /** Explicación breve de cómo se hace la sesión */
+  intro?: string[]
 }
 
 export const CAUTIONS: Record<CautionId, { exercise: string; reason: string }> = {
@@ -151,6 +160,163 @@ export const CORE_EXERCISES: Exercise[] = [
 export function coreExerciseFor(date: Date) {
   const day = Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000)
   return CORE_EXERCISES[day % CORE_EXERCISES.length]
+}
+
+/**
+ * Entreno con Jime: clase de funcional para las dos, a intensidad moderada.
+ * Cada una hace su versión. Para ti: sin saltos ni impacto, sin abdominales de
+ * flexión (crunch, sit up) y con el cuello neutro, por el sacro y la cervical.
+ */
+const JIME_SESSION: Session = {
+  id: 'jime',
+  name: 'Funcional con Jime',
+  estimate: '~55\'',
+  intro: [
+    'Clase de funcional para las dos, a la vez y cada una con su versión.',
+    'Intensidad moderada: al terminar cada bloque deberíais poder hablar. Esfuerzo 6-7 de 10, nada al fallo.',
+    'Los kilos son orientativos: subid o bajad según cómo os veáis.',
+  ],
+  warmup: [
+    'Bici o remo suave 5\' (las dos)',
+    '2 rondas: 10 sentadillas (tú a un banco) + 10 puentes de glúteo',
+    'Movilidad: hombros, cadera y tobillos (1\')',
+    '2 × 20" de plancha (tú con rodillas apoyadas)',
+  ],
+  exercises: [
+    {
+      id: 'alt-goblet',
+      block: 'Bloque 1 · Fuerza (descanso 90" entre series)',
+      name: 'Sentadilla goblet',
+      sets: 3,
+      target: { kind: 'reps', min: 10, max: 10 },
+      rest: 90,
+      levelHint: 'Peso (kg)',
+      partner: {
+        me: 'Mancuerna de 10-12 kg. Puedes bajar hasta tocar un banco.',
+        jime: 'Mancuerna o kettlebell de 16-20 kg, sentadilla completa.',
+      },
+    },
+    {
+      id: 'alt-remo-mancuerna',
+      block: 'Bloque 1 · Fuerza (descanso 90" entre series)',
+      name: 'Remo con mancuerna a una mano (apoyo en banco)',
+      sets: 3,
+      target: { kind: 'reps', min: 10, max: 10, perSide: true },
+      rest: 90,
+      levelHint: 'Peso (kg)',
+      partner: { me: '8-10 kg.', jime: '14-16 kg.' },
+    },
+    {
+      id: 'jime-step-up',
+      block: 'Bloque 2 · Estaciones: 3 × (40" trabajo / 20" descanso), 1\' para cambiar',
+      name: 'Step-up al cajón',
+      sets: 3,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Alternando piernas, subiendo con todo el pie apoyado. Sin saltar.',
+      levelHint: 'Altura / peso',
+      partner: {
+        me: 'Cajón bajo (30-40 cm), sin peso o mancuernas de 4-6 kg.',
+        jime: 'Cajón de 50-60 cm con mancuernas de 10-12 kg.',
+      },
+    },
+    {
+      id: 'jime-pushup',
+      block: 'Bloque 2 · Estaciones: 3 × (40" trabajo / 20" descanso), 1\' para cambiar',
+      name: 'Flexiones',
+      sets: 3,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Cuerpo en bloque y mirada al suelo (cuello neutro).',
+      levelHint: 'Altura del apoyo',
+      partner: {
+        me: 'Inclinadas con las manos en un banco o la barra Smith a la altura de la cadera.',
+        jime: 'Completas en el suelo; si van fáciles, con 2" de pausa abajo.',
+      },
+    },
+    {
+      id: 'jime-rdl',
+      block: 'Bloque 2 · Estaciones: 3 × (40" trabajo / 20" descanso), 1\' para cambiar',
+      name: 'Peso muerto rumano con mancuernas',
+      sets: 3,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Lento: cadera atrás y espalda recta. Si notas el sacro, cambia a puente de glúteo.',
+      levelHint: 'Peso (kg)',
+      partner: {
+        me: '6-8 kg en cada mano, bajando solo hasta debajo de las rodillas.',
+        jime: '14-16 kg en cada mano, rango completo.',
+      },
+    },
+    {
+      id: 'jime-bici',
+      block: 'Bloque 2 · Estaciones: 3 × (40" trabajo / 20" descanso), 1\' para cambiar',
+      name: 'Bici de aire (o bici estática)',
+      sets: 3,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      partner: {
+        me: 'Ritmo cómodo: tienes que poder hablar.',
+        jime: 'Ritmo fuerte, sin llegar a esprintar.',
+      },
+    },
+    {
+      id: 'jime-granjero',
+      block: 'Bloque 2 · Estaciones: 3 × (40" trabajo / 20" descanso), 1\' para cambiar',
+      name: 'Paseo del granjero',
+      sets: 3,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Caminar erguida con una mancuerna o kettlebell en cada mano, hombros abajo.',
+      levelHint: 'Peso (kg)',
+      partner: { me: '10-12 kg en cada mano.', jime: '20-24 kg en cada mano.' },
+    },
+    {
+      id: 'jime-plancha-pareja',
+      block: 'Bloque 3 · Core en pareja (2 rondas)',
+      name: 'Plancha frente a frente chocando manos',
+      sets: 2,
+      target: { kind: 'seconds', min: 30, max: 30 },
+      rest: 30,
+      note: 'Una frente a la otra; chocáis la mano alternando, sin girar la cadera.',
+      partner: { me: 'Con rodillas apoyadas.', jime: 'Plancha completa.' },
+    },
+    {
+      id: 'jime-pallof',
+      block: 'Bloque 3 · Core en pareja (2 rondas)',
+      name: 'Pallof press en polea (o banda)',
+      sets: 2,
+      target: { kind: 'reps', min: 10, max: 10, perSide: true },
+      rest: 30,
+      note: 'De lado a la polea, empujar al frente y volver sin dejar que te gire.',
+      levelHint: 'Peso (kg)',
+      partner: { me: 'Peso ligero (2-5 kg en la polea).', jime: 'Más peso o más lejos de la polea.' },
+    },
+    {
+      id: 'jime-dead-bug',
+      block: 'Bloque 3 · Core en pareja (2 rondas)',
+      name: 'Dead bug',
+      sets: 2,
+      target: { kind: 'reps', min: 8, max: 8, perSide: true },
+      rest: 30,
+      note: 'Espalda baja pegada al suelo todo el tiempo.',
+      partner: { me: 'Brazo y pierna contrarios, rodilla doblada si hace falta.', jime: 'Con una mancuerna ligera en las manos.' },
+    },
+    {
+      id: 'jime-calma',
+      block: 'Vuelta a la calma',
+      name: 'Estiramientos suaves 5\'',
+      sets: 1,
+      target: { kind: 'check', label: 'Hecho' },
+      rest: 0,
+      note: 'Cuádriceps, isquios, glúteo, pecho y espalda. Sin forzar el cuello.',
+    },
+  ],
+}
+
+/** Calentamiento de una sesión: el propio o el de la rutina */
+export function warmupFor(id: SessionId) {
+  return SESSIONS[id].warmup ?? WARMUP
 }
 
 export const SESSIONS: Record<SessionId, Session> = {
@@ -380,6 +546,7 @@ export const SESSIONS: Record<SessionId, Session> = {
       walking('caminata-b', 10, 10, ''),
     ],
   },
+  jime: JIME_SESSION,
   abs: {
     id: 'abs',
     name: 'Abdomen (4 ejercicios)',
@@ -1015,11 +1182,11 @@ export function formatTarget(t: Target, sets: number) {
       return `${sets} x ${r}${t.perSide ? ' por lado' : ''}`
     }
     case 'seconds':
-      return `${sets} x ${t.min}-${t.max}"`
+      return `${sets} x ${t.min === t.max ? t.min : `${t.min}-${t.max}`}"`
     case 'minutes':
-      return `${t.min}-${t.max}'`
+      return `${t.min === t.max ? t.min : `${t.min}-${t.max}`}'`
     case 'check':
-      return t.label
+      return t.label === 'Hecho' ? '' : t.label
   }
 }
 
@@ -1088,4 +1255,12 @@ export const EXERCISE_IMAGES: Record<string, ExerciseImage> = {
     folder: 'Kettlebell_One-Legged_Deadlift',
     note: 'La imagen usa una pesa rusa; tú lo haces sin peso y con una mano en la pared.',
   },
+  'jime-step-up': { folder: 'Dumbbell_Step_Ups' },
+  'jime-pushup': { folder: 'Pushups', note: 'Tú las haces inclinadas, con las manos en un banco.' },
+  'jime-rdl': { folder: 'Stiff-Legged_Dumbbell_Deadlift', note: 'Rodillas un poco flexionadas, como en el rumano.' },
+  'jime-bici': { folder: 'Air_Bike' },
+  'jime-granjero': { folder: 'Farmers_Walk' },
+  'jime-plancha-pareja': { folder: 'Plank' },
+  'jime-pallof': { folder: 'Pallof_Press' },
+  'jime-dead-bug': { folder: 'Dead_Bug' },
 }
