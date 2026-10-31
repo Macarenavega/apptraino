@@ -65,13 +65,23 @@ const caminata: HowTo = {
 }
 
 export const HOWTO: Record<string, HowTo> = {
-  'gime-step-up': {
+  'gime-remo-trx': {
     steps: [
-      'De frente al cajón, apoya un pie entero arriba.',
-      'Empuja con esa pierna hasta quedar de pie arriba, sin impulsarte con la de abajo.',
-      'Baja despacio con la misma pierna y alterna.',
+      'Agarra las asas con los brazos estirados y camina con los pies hacia el anclaje hasta inclinarte hacia atrás.',
+      'Cuerpo recto de la cabeza a los talones, abdomen y glúteo apretados.',
+      'Tira llevando los codos atrás pegados al cuerpo hasta que las manos lleguen al pecho.',
+      'Baja despacio. Para hacerlo más fácil, ponte más de pie; para más difícil, más tumbada.',
     ],
-    video: 'step up al cajón con mancuernas técnica',
+    video: 'remo en TRX principiantes técnica',
+  },
+  'gime-zancada': {
+    steps: [
+      'De pie, pies al ancho de la cadera (con mancuernas a los lados si usas peso).',
+      'Da un paso largo hacia atrás y baja en vertical hasta que las dos rodillas queden a unos 90°.',
+      'Pecho arriba y rodilla de delante en línea con el pie.',
+      'Empuja con el talón de la pierna de delante para volver y cambia de pierna.',
+    ],
+    video: 'zancada hacia atrás con mancuernas técnica',
   },
   'gime-pushup': {
     steps: [
