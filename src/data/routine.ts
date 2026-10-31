@@ -53,6 +53,7 @@ export type SessionId =
   | 'core'
   | 'abs'
   | 'gime'
+  | 'fullbody'
   | 'm2supA'
   | 'm2infA'
   | 'm2supB'
@@ -314,6 +315,121 @@ const GIME_SESSION: Session = {
   ],
 }
 
+/** Rutina full body con mancuernas de 25': 10 ejercicios en circuito, 2 rondas */
+const FULLBODY_SESSION: Session = {
+  id: 'fullbody',
+  name: 'Full body con mancuernas',
+  estimate: '~25\'',
+  intro: [
+    '10 ejercicios en orden: 40" de trabajo y 20" de descanso. 2 rondas, con 1\' de descanso entre rondas si lo necesitas.',
+    'Ronda 1: marca la Serie 1 de cada ejercicio. Ronda 2: vuelve arriba y marca la Serie 2.',
+    'Para progresar: más peso, 45-50" de trabajo, 15" de descanso o una 3.ª ronda (una cosa por vez).',
+  ],
+  warmup: ['Elíptica o bici suave 5\'', 'Movilidad de hombros, cadera y tobillos'],
+  exercises: [
+    {
+      id: 'fb-sentadilla',
+      block: '2 rondas · 40" trabajo / 20" descanso · 1\' entre rondas',
+      name: '1. Sentadilla con mancuernas',
+      sets: 2,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Mancuernas a la altura de los hombros, cadera atrás y pecho arriba. (Piernas · glúteos)',
+      levelHint: 'Peso (kg)',
+    },
+    {
+      id: 'gime-rdl',
+      block: '2 rondas · 40" trabajo / 20" descanso · 1\' entre rondas',
+      name: '2. Peso muerto rumano',
+      sets: 2,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Lento, espalda recta y bajando hasta donde notes los isquios. Si notas el sacro, cambia a puente de glúteo. (Isquios · glúteos)',
+      levelHint: 'Peso (kg)',
+    },
+    {
+      id: 'alt-remo-mancuerna',
+      block: '2 rondas · 40" trabajo / 20" descanso · 1\' entre rondas',
+      name: '3. Remo con mancuerna (apoyo en banco)',
+      sets: 2,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Cambia de brazo a mitad de los 40". (Espalda · bíceps)',
+      levelHint: 'Peso (kg)',
+    },
+    {
+      id: 'fb-floor-press',
+      block: '2 rondas · 40" trabajo / 20" descanso · 1\' entre rondas',
+      name: '4. Press de pecho en el suelo',
+      sets: 2,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Tumbada boca arriba con rodillas dobladas; los codos tocan el suelo suave. (Pecho · tríceps)',
+      levelHint: 'Peso (kg)',
+    },
+    {
+      id: 'gime-zancada',
+      block: '2 rondas · 40" trabajo / 20" descanso · 1\' entre rondas',
+      name: '5. Zancada alterna (hacia atrás)',
+      sets: 2,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Paso atrás y bajar en vertical; agárrate de algo si hace falta. (Piernas · glúteos)',
+      levelHint: 'Peso (kg)',
+    },
+    {
+      id: 'alt-press-hombro-mancuernas',
+      block: '2 rondas · 40" trabajo / 20" descanso · 1\' entre rondas',
+      name: '6. Press de hombros sentada',
+      sets: 2,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'En banco con respaldo y cuello neutro. (Hombros · tríceps)',
+      levelHint: 'Peso (kg)',
+    },
+    {
+      id: 'fb-hip-thrust',
+      block: '2 rondas · 40" trabajo / 20" descanso · 1\' entre rondas',
+      name: '7. Hip thrust con mancuerna',
+      sets: 2,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Espalda alta apoyada en un banco (o en el suelo como puente). Pausa 1" arriba. (Glúteos · isquios)',
+      levelHint: 'Peso (kg)',
+    },
+    {
+      id: 'fb-curl',
+      block: '2 rondas · 40" trabajo / 20" descanso · 1\' entre rondas',
+      name: '8. Curl de bíceps',
+      sets: 2,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Codos pegados al cuerpo, sin balancear. (Bíceps · antebrazos)',
+      levelHint: 'Peso (kg)',
+    },
+    {
+      id: 'fb-plancha-remo',
+      block: '2 rondas · 40" trabajo / 20" descanso · 1\' entre rondas',
+      name: '9. Plancha con remo',
+      sets: 2,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'Con rodillas apoyadas para empezar. Sin girar la cadera al remar. (Core · espalda)',
+      levelHint: 'Peso (kg)',
+    },
+    {
+      id: 'fb-sumo',
+      block: '2 rondas · 40" trabajo / 20" descanso · 1\' entre rondas',
+      name: '10. Sentadilla sumo con mancuerna (en lugar del swing)',
+      sets: 2,
+      target: { kind: 'seconds', min: 40, max: 40 },
+      rest: 20,
+      note: 'El swing es un golpe de cadera rápido que carga la zona lumbar; por el sacro, esta versión trabaja lo mismo de forma controlada. (Glúteos · piernas)',
+      levelHint: 'Peso (kg)',
+    },
+  ],
+}
+
 /** Calentamiento de una sesión: el propio o el de la rutina */
 export function warmupFor(id: SessionId) {
   return SESSIONS[id].warmup ?? WARMUP
@@ -547,6 +663,7 @@ export const SESSIONS: Record<SessionId, Session> = {
     ],
   },
   gime: GIME_SESSION,
+  fullbody: FULLBODY_SESSION,
   abs: {
     id: 'abs',
     name: 'Abdomen (4 ejercicios)',
@@ -1256,6 +1373,12 @@ export const EXERCISE_IMAGES: Record<string, ExerciseImage> = {
     note: 'La imagen usa una pesa rusa; tú lo haces sin peso y con una mano en la pared.',
   },
   'gime-zancada': { folder: 'Dumbbell_Rear_Lunge' },
+  'fb-sentadilla': { folder: 'Dumbbell_Squat' },
+  'fb-floor-press': { folder: 'Dumbbell_Floor_Press' },
+  'fb-hip-thrust': { folder: 'Barbell_Hip_Thrust', note: 'La imagen usa barra; tú apoyas una mancuerna en la cadera.' },
+  'fb-curl': { folder: 'Dumbbell_Bicep_Curl' },
+  'fb-plancha-remo': { folder: 'Alternating_Renegade_Row', note: 'La imagen es con piernas estiradas; tú empieza con rodillas apoyadas.' },
+  'fb-sumo': { folder: 'Plie_Dumbbell_Squat' },
   'gime-pushup': { folder: 'Pushups', note: 'Tú las haces inclinadas, con las manos en un banco.' },
   'gime-rdl': { folder: 'Stiff-Legged_Dumbbell_Deadlift', note: 'Rodillas un poco flexionadas, como en el rumano.' },
   'gime-bici': { folder: 'Air_Bike' },

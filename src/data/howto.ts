@@ -65,6 +65,54 @@ const caminata: HowTo = {
 }
 
 export const HOWTO: Record<string, HowTo> = {
+  'fb-sentadilla': {
+    steps: [
+      'De pie, pies al ancho de hombros, una mancuerna en cada mano apoyada en los hombros.',
+      'Baja llevando la cadera atrás y abajo, pecho arriba y rodillas en línea con los pies.',
+      'Baja hasta donde controles y sube empujando con todo el pie.',
+    ],
+    video: 'sentadilla con mancuernas en los hombros técnica',
+  },
+  'fb-floor-press': {
+    steps: [
+      'Tumbada boca arriba, rodillas dobladas y una mancuerna en cada mano sobre el pecho.',
+      'Baja las mancuernas hasta que los codos toquen el suelo suave, a unos 45° del cuerpo.',
+      'Empuja hacia arriba hasta estirar los brazos. Cabeza apoyada todo el tiempo.',
+    ],
+    video: 'press de pecho en el suelo con mancuernas',
+  },
+  'fb-hip-thrust': {
+    steps: [
+      'Espalda alta apoyada en un banco (o tumbada en el suelo), rodillas dobladas y pies apoyados.',
+      'Sostén una mancuerna sobre la cadera con las dos manos.',
+      'Sube la cadera apretando el glúteo hasta quedar en línea con rodillas y hombros; pausa 1" y baja.',
+    ],
+    video: 'hip thrust con mancuerna técnica',
+  },
+  'fb-curl': {
+    steps: [
+      'De pie, una mancuerna en cada mano, brazos estirados y palmas al frente.',
+      'Dobla los codos subiendo las mancuernas sin mover los codos de su sitio.',
+      'Baja despacio. Sin balancear el cuerpo.',
+    ],
+    video: 'curl de bíceps con mancuernas técnica',
+  },
+  'fb-plancha-remo': {
+    steps: [
+      'En plancha (con rodillas apoyadas para empezar), manos sobre dos mancuernas debajo de los hombros.',
+      'Sube una mancuerna llevando el codo atrás, sin girar la cadera.',
+      'Bájala y cambia de lado. Mirada al suelo y abdomen firme.',
+    ],
+    video: 'plancha con remo renegade row principiantes',
+  },
+  'fb-sumo': {
+    steps: [
+      'Pies más abiertos que los hombros y puntas hacia afuera; una mancuerna colgando con las dos manos.',
+      'Baja llevando la cadera atrás y las rodillas hacia afuera, espalda recta.',
+      'Sube apretando el glúteo.',
+    ],
+    video: 'sentadilla sumo con mancuerna técnica',
+  },
   'gime-zancada': {
     steps: [
       'De pie, pies al ancho de la cadera (con mancuernas a los lados si usas peso).',

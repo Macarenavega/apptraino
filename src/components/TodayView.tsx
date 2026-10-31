@@ -103,7 +103,30 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         onStart={() => onStart('core', coreEx.id)}
       />
 
-      <GimeCard state={state} now={now} busy={!!state.active} onStart={() => onStart('gime')} />
+      <ExtraCard
+        id="gime"
+        eyebrow="Entreno con Gime"
+        title="Clase de funcional para dos"
+        subtitle="cada una con su versión"
+        emoji="👯‍♀️"
+        startLabel="Empezar con Gime"
+        state={state}
+        now={now}
+        busy={!!state.active}
+        onStart={() => onStart('gime')}
+      />
+      <ExtraCard
+        id="fullbody"
+        eyebrow="Rutina extra · 25'"
+        title="Full body con mancuernas"
+        subtitle="10 ejercicios · 2 rondas"
+        emoji="🏋️‍♀️"
+        startLabel="Empezar"
+        state={state}
+        now={now}
+        busy={!!state.active}
+        onStart={() => onStart('fullbody')}
+      />
 
       {!state.active && sessionId && <SessionCard state={state} id={sessionId} />}
 
@@ -428,35 +451,47 @@ function CoreCard({
   )
 }
 
-/** Apartado para entrenar con Gime: clase de funcional para las dos */
-function GimeCard({
+/** Sesiones aparte de la rutina (entreno con Gime, full body): con la rutina completa, fotos y pasos */
+function ExtraCard({
+  id,
+  eyebrow,
+  title,
+  subtitle,
+  emoji,
+  startLabel,
   state,
   now,
   busy,
   onStart,
 }: {
+  id: SessionId
+  eyebrow: string
+  title: string
+  subtitle: string
+  emoji: string
+  startLabel: string
   state: AppState
   now: Date
   busy: boolean
   onStart: () => void
 }) {
   const [open, setOpen] = useState(false)
-  const session = SESSIONS.gime
-  const last = [...state.history].reverse().find((w) => w.sessionId === 'gime' && w.finishedAt)
+  const session = SESSIONS[id]
+  const last = [...state.history].reverse().find((w) => w.sessionId === id && w.finishedAt)
   const blocks = [...new Set(session.exercises.map((e) => e.block ?? ''))]
   return (
     <section className="card">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="eyebrow text-emerald-600 dark:text-emerald-400">Entreno con Gime</p>
-          <h2 className="mt-0.5 text-xl font-light">Clase de funcional para dos</h2>
+          <p className="eyebrow text-emerald-600 dark:text-emerald-400">{eyebrow}</p>
+          <h2 className="mt-0.5 text-xl font-light">{title}</h2>
           <p className="text-sm text-muted">
-            {session.estimate} · cada una con su versión
+            {session.estimate} · {subtitle}
             {last && ` · última: ${new Date(last.startedAt).toDateString() === now.toDateString() ? 'hoy' : dateFmt.format(new Date(last.startedAt))}`}
           </p>
         </div>
         <span className="text-3xl" aria-hidden>
-          👯‍♀️
+          {emoji}
         </span>
       </div>
       {open && (
@@ -467,7 +502,7 @@ function GimeCard({
             </p>
           ))}
           <div>
-            <p className="font-medium">Calentamiento (~10')</p>
+            <p className="font-medium">Calentamiento</p>
             <ul className="mt-1 list-disc pl-5 text-muted">
               {session.warmup?.map((w) => (
                 <li key={w}>{w}</li>
@@ -505,7 +540,7 @@ function GimeCard({
       )}
       <div className="mt-4 flex gap-2">
         <button className={`${busy ? 'btn-ghost' : 'btn-primary'} flex-1 py-3`} disabled={busy} onClick={onStart}>
-          {busy ? 'Al terminar' : 'Empezar con Gime'}
+          {busy ? 'Al terminar' : startLabel}
         </button>
         <button className="btn-ghost shrink-0 py-3" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
           {open ? 'Ocultar' : 'Ver rutina y fotos'}

@@ -91,7 +91,7 @@ export function estimateCalories(w: WorkoutLog, kg: number): CalorieEstimate {
         ? { label: 'Core', met: MET.core }
         : w.sessionId === 'mov'
           ? { label: 'Movilidad', met: MET.mobility }
-          : w.sessionId === 'gime'
+          : w.sessionId === 'gime' || w.sessionId === 'fullbody'
             ? { label: 'Clase funcional', met: MET.functional }
           : { label: 'Fuerza (con descansos)', met: MET.strength }
     parts.unshift({ label: base.label, minutes: restMinutes, kcal: kcalOf(base.met, kg, restMinutes) })

@@ -109,7 +109,7 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
       <section className="card">
         <button className="flex w-full items-center justify-between" onClick={() => setShowWarmup((v) => !v)}>
           <span className="font-semibold">
-            Calentamiento ({session.warmup ? "~10'" : "~15'"}) {warmupDone && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
+            Calentamiento ({session.warmup ? `~${session.warmup.length > 2 ? 10 : 5}'` : "~15'"}) {warmupDone && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
           </span>
           <span className="text-muted">{showWarmup ? '▲' : '▼'}</span>
         </button>
@@ -212,7 +212,7 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
                 <dd>{meta.partner.gime}</dd>
               </dl>
             )}
-            <ExerciseGuide exerciseId={ex.exerciseId} defaultOpen={workout.sessionId === 'gime'} />
+            <ExerciseGuide exerciseId={ex.exerciseId} defaultOpen={workout.sessionId === 'gime' || workout.sessionId === 'fullbody'} />
 
             {meta?.levelHint && (
               <label className="mt-3 block">
