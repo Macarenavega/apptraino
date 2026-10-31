@@ -65,15 +65,6 @@ const caminata: HowTo = {
 }
 
 export const HOWTO: Record<string, HowTo> = {
-  'gime-remo-trx': {
-    steps: [
-      'Agarra las asas con los brazos estirados y camina con los pies hacia el anclaje hasta inclinarte hacia atrás.',
-      'Cuerpo recto de la cabeza a los talones, abdomen y glúteo apretados.',
-      'Tira llevando los codos atrás pegados al cuerpo hasta que las manos lleguen al pecho.',
-      'Baja despacio. Para hacerlo más fácil, ponte más de pie; para más difícil, más tumbada.',
-    ],
-    video: 'remo en TRX principiantes técnica',
-  },
   'gime-zancada': {
     steps: [
       'De pie, pies al ancho de la cadera (con mancuernas a los lados si usas peso).',
