@@ -6,7 +6,7 @@ import { TimerBar } from './components/TimerBar'
 import { TodayView } from './components/TodayView'
 import { WorkoutView } from './components/WorkoutView'
 import { CORE_GROUP, warmupFor } from './data/routine'
-import { coreDoneToday, coreFor, exerciseLog, newWorkout, useAppState } from './lib/store'
+import { coreDoneToday, coreFor, exerciseLog, newWorkout, programOf, useAppState } from './lib/store'
 import { unlockAudio, useTimer } from './lib/timer'
 
 type Tab = 'today' | 'history' | 'settings'
@@ -36,7 +36,7 @@ export default function App() {
             }
             onClose={() => setSummaryId(null)}
             core={
-              summary.sessionId === 'core' || coreDoneToday(state)
+              summary.sessionId === 'core' || coreDoneToday(state) || programOf(state) === 'v4'
                 ? undefined
                 : {
                     name: coreFor(state).name,

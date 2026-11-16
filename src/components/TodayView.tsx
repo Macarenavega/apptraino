@@ -20,9 +20,10 @@ import {
   type Exercise,
   type SessionId,
 } from '../data/routine'
+import { V4_NOTES, V4_WEEKS } from '../data/v4'
 import { estimateCalories } from '../lib/calories'
 import { ExerciseGuide } from './ExerciseGuide'
-import { coreDoneToday, coreFor, daysSince, m2Week, programOf, weekPlanOf, type AppState } from '../lib/store'
+import { coreDoneToday, coreFor, daysSince, m2Week, programOf, v4Week, weekPlanOf, type AppState } from '../lib/store'
 
 type Props = {
   state: AppState
@@ -41,6 +42,7 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
   const [now] = useState(() => new Date())
   const today = now.getDay()
   const isM2 = programOf(state) === 'm2'
+  const isV4 = programOf(state) === 'v4'
   const weekDef = weekPlanOf(state)
   const plan = planWeek(weekDef, state.weekPlans[weekKey(now)])[today]
   const [picked, setPicked] = useState<SessionId | undefined>(plan.session)
@@ -52,7 +54,7 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
     (w) => w.sessionId === sessionId && new Date(w.startedAt).toDateString() === now.toDateString(),
   )
   // En el Mes 1 la sesión de abdomen es extra; el Mes 2 la deja fuera (flexión de columna)
-  const sessionsInPhase: SessionId[] = isM2 ? weekDef.order : [...weekDef.order, 'abs']
+  const sessionsInPhase: SessionId[] = isM2 || isV4 ? weekDef.order : [...weekDef.order, 'abs']
   const coreEx = coreFor(state, now)
   const coreDone = coreDoneToday(state, now)
 
@@ -65,7 +67,14 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         isToday={sessionId === plan.session}
         doneToday={doneToday}
         restLabel={plan.restLabel}
-        label={`${DAY_NAMES[today]} · ${isM2 ? `Mes 2 · Semana ${Math.min(4, m2Week(state, now))} de 4` : `Fase ${state.phase}`}`}
+        label={`${DAY_NAMES[today]} · ${
+          isV4
+            ? `Semana tipo v4 · Piernas ${v4Week(state, now)}/5`
+            : isM2
+              ? `Mes 2 · Semana ${Math.min(4, m2Week(state, now))} de 4`
+              : `Fase ${state.phase}`
+        }`}
+        dailyLabel={isV4 ? 'hipopresivos' : 'core diario'}
         onStart={() => sessionId && onStart(sessionId)}
         coreDone={coreDone}
         onCore={() => onStart('core', coreEx.id)}
@@ -80,7 +89,7 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
         </section>
       )}
 
-      {!isM2 && pending.length > 0 && (
+      {!isM2 && !isV4 && pending.length > 0 && (
         <button
           onClick={onOpenSettings}
           className="card block w-full border-amber-300 bg-amber-50 text-left text-sm dark:border-amber-700 dark:bg-amber-950/40"
@@ -96,6 +105,7 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
 
       <CoreCard
         now={now}
+        daily={isV4}
         ex={coreEx}
         onPick={onCorePick}
         done={coreDone}
@@ -151,7 +161,13 @@ export function TodayView({ state, onStart, onResume, onPhase2, onOpenSettings, 
       )}
 
       <WeekPlanner state={state} now={now} onWeekPlan={onWeekPlan} openRequest={openPlanner} />
-      {isM2 ? <M2WeekCard state={state} now={now} /> : <PhaseCard state={state} onPhase2={onPhase2} />}
+      {isV4 ? (
+        <V4WeekCard state={state} now={now} />
+      ) : isM2 ? (
+        <M2WeekCard state={state} now={now} />
+      ) : (
+        <PhaseCard state={state} onPhase2={onPhase2} />
+      )}
     </div>
   )
 }
@@ -193,6 +209,7 @@ function Hero({
   restLabel,
   label,
   coreDone,
+  dailyLabel,
   onStart,
   onCore,
   onResume,
@@ -206,6 +223,7 @@ function Hero({
   restLabel?: string
   label: string
   coreDone: boolean
+  dailyLabel: string
   onStart: () => void
   onCore: () => void
   onResume: () => void
@@ -274,7 +292,7 @@ function Hero({
             </button>
           ) : (
             <button className="btn-primary flex-1 py-4 text-lg" onClick={onCore}>
-              {coreDone ? 'Repetir el core diario' : 'Hacer el core diario'}
+              {coreDone ? `Repetir ${dailyLabel === 'hipopresivos' ? 'los' : 'el'} ${dailyLabel}` : `Hacer ${dailyLabel === 'hipopresivos' ? 'los' : 'el'} ${dailyLabel}`}
             </button>
           )}
         </div>
@@ -375,6 +393,7 @@ function DayCalories({ state, now, onOpenSettings }: { state: AppState; now: Dat
 
 function CoreCard({
   now,
+  daily,
   ex,
   onPick,
   done,
@@ -382,6 +401,8 @@ function CoreCard({
   onStart,
 }: {
   now: Date
+  /** Semana tipo v4: hipopresivos fijos todos los días, sin rotación */
+  daily?: boolean
   ex: Exercise
   onPick: (id: string) => void
   done: boolean
@@ -404,18 +425,24 @@ function CoreCard({
           />
         )}
         <div className="min-w-0 flex-1">
-          <p className="eyebrow text-emerald-600 dark:text-emerald-400">Core del día {done && '· hecho ✓'}</p>
+          <p className="eyebrow text-emerald-600 dark:text-emerald-400">
+            {daily ? 'Todos los días' : 'Core del día'} {done && '· hecho ✓'}
+          </p>
           <h2 className="mt-0.5 font-medium leading-snug">{ex.name}</h2>
-          <p className="text-sm text-muted tabular-nums">{formatTarget(ex.target, ex.sets)} · ~5'</p>
+          <p className="text-sm text-muted tabular-nums">
+            {formatTarget(ex.target, ex.sets)} · ~{daily ? 6 : 5}'
+          </p>
         </div>
       </div>
       <div className="mt-4 flex gap-2">
         <button className={`${done || busy ? 'btn-ghost' : 'btn-primary'} flex-1 py-3`} disabled={busy} onClick={onStart}>
-          {busy ? 'Al terminar' : done ? 'Repetir el core' : 'Hacer el core'}
+          {busy ? 'Al terminar' : daily ? (done ? 'Repetir' : 'Hacerlos') : done ? 'Repetir el core' : 'Hacer el core'}
         </button>
-        <button className="btn-ghost shrink-0 py-3" aria-expanded={choosing} onClick={() => setChoosing((v) => !v)}>
-          ⇄ Cambiar
-        </button>
+        {!daily && (
+          <button className="btn-ghost shrink-0 py-3" aria-expanded={choosing} onClick={() => setChoosing((v) => !v)}>
+            ⇄ Cambiar
+          </button>
+        )}
       </div>
       {choosing && (
         <ul className="mt-3 divide-y divide-line rounded-2xl border border-line">
@@ -443,9 +470,11 @@ function CoreCard({
         </ul>
       )}
       <p className="mt-3 text-xs text-muted">
-        {busy
-          ? 'Termina tu entrenamiento y hazlo después (también aparece en el resumen).'
-          : 'Uno por día, también los de descanso. Si no te apetece el de hoy, cámbialo por cualquiera de los otros.'}
+        {daily
+          ? `${V4_NOTES.daily} Al levantarte, antes de desayunar.`
+          : busy
+            ? 'Termina tu entrenamiento y hazlo después (también aparece en el resumen).'
+            : 'Uno por día, también los de descanso. Si no te apetece el de hoy, cámbialo por cualquiera de los otros.'}
       </p>
     </section>
   )
@@ -646,6 +675,7 @@ function WeekPlanner({
       )}
 
       {programOf(state) === 'm2' && <p className="mt-2 text-xs text-muted">{M2_NOTES.functional}</p>}
+      {programOf(state) === 'v4' && <p className="mt-2 text-xs text-muted">{V4_NOTES.week}</p>}
 
       {missing.length > 0 && (
         <p className="mt-3 rounded-lg bg-amber-50 p-2 text-sm dark:bg-amber-950/40">
@@ -692,6 +722,29 @@ function M2WeekCard({ state, now }: { state: AppState; now: Date }) {
       </ol>
       <p className="mt-2 text-xs text-muted">
         Las semanas cuentan desde tu primera sesión del Mes 2. En la semana 4 la app pone 2 series por ejercicio.
+      </p>
+    </section>
+  )
+}
+
+function V4WeekCard({ state, now }: { state: AppState; now: Date }) {
+  const week = v4Week(state, now)
+  return (
+    <section className="card">
+      <h3 className="font-semibold">Ciclo de piernas · 5 semanas</h3>
+      <p className="mt-1 text-sm">
+        <b>Semana {week}:</b> {V4_WEEKS[week - 1]}
+      </p>
+      <ol className="mt-3 space-y-1 text-sm">
+        {V4_WEEKS.map((w, i) => (
+          <li key={i} className={i + 1 === week ? 'font-semibold' : 'text-muted'}>
+            {i + 1}. {w}
+          </li>
+        ))}
+      </ol>
+      <p className="mt-2 text-xs text-muted">
+        Las semanas cuentan desde tu primera sesión de la semana tipo v4. En la semana 5 la app deja la mitad de las
+        series de fuerza del Día 1; después vuelve a empezar.
       </p>
     </section>
   )

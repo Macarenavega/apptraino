@@ -1,8 +1,9 @@
 # Apptraino
 
-App para seguir la rutina de calistenia: Tren Superior (fuerza) + Tren Inferior (hipertrofia). Tiene dos programas:
+App para seguir la rutina de entrenamiento. Tiene tres programas:
 
-- **Mes 2 (en uso)**: 4 días, 4 semanas; mismos días que el Mes 1, sube la dificultad. Semana 4 de descarga (la app pone 2 series por ejercicio).
+- **Semana tipo v4 (en uso)**: Día 1 Piernas (lunes), Día 2 Dominadas (martes), Día 3 Movilidad con fuerza (jueves), Día 4 Full body (viernes). Hipopresivos todos los días en ayunas, movilidad previa como calentamiento y ciclo de piernas de 5 semanas (en la semana 5 la app deja la mitad de las series de fuerza del Día 1). Si se eligen menos días, se conservan por prioridad: Día 1, Día 2, Día 4, Día 3. Rutina en `src/data/v4.ts`.
+- **Mes 2**: 4 días, 4 semanas; mismos días que el Mes 1, sube la dificultad. Semana 4 de descarga (la app pone 2 series por ejercicio).
 - **Mes 1**: rutina principiante con Fase 1 (4 días) y Fase 2 (5-6 días).
 
 El programa se elige en Ajustes. Cambiar de programa no borra el historial.

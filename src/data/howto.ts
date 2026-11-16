@@ -539,6 +539,285 @@ export const HOWTO: Record<string, HowTo> = {
     ],
     video: 'rutina de movilidad articular general principiantes',
   },
+  // ─── Semana tipo v4 ───
+  hipopresivos: {
+    steps: [
+      'Cada repetición: 2 respiraciones profundas y vacía todo el aire en la segunda.',
+      'Sin volver a inhalar, abre las costillas (como si inspiraras sin meter aire) y contrae suave el periné. Sostén 15-20".',
+      'Para salir, relaja el abdomen e inhala suave por la nariz. Respiración normal entre repeticiones.',
+      'Postura 1: brazos hacia atrás, pecho abierto, crecer hacia el techo.',
+      'Postura 2: brazos delante de la cara, escápulas separadas como empujando una pared, tronco apenas inclinado.',
+      'Postura 3: brazos por encima de la cabeza, algo adelantados, al ancho de hombros.',
+      'Postura 4: tronco inclinado, manos sobre las rodillas, escápulas separadas, hombros lejos de las orejas.',
+      'Si aparece mareo o presión fuerte en el cuello, para.',
+    ],
+    video: 'hipopresivos posturas básicas tutorial',
+  },
+  'v4-smith': {
+    steps: [
+      'Barra apoyada en la parte alta de la espalda, pies un poco adelantados respecto a la barra, al ancho de hombros.',
+      'Baja con el pecho arriba hasta que los muslos queden paralelos al suelo (90°).',
+      'Sube empujando el suelo con todo el pie, sin despegar los talones.',
+    ],
+    video: 'sentadilla en multipower smith técnica',
+  },
+  'v4-bulgara': {
+    steps: [
+      'Empeine del pie de atrás apoyado en un banco; pie de delante a un paso largo. Una mancuerna en cada mano.',
+      'Baja en vertical hasta que la rodilla de atrás casi toque el suelo, con el tronco apenas inclinado.',
+      'Sube empujando con el talón de la pierna de delante. Todas las reps de un lado y después el otro.',
+    ],
+    video: 'zancada búlgara con mancuernas técnica',
+  },
+  'v4-rdl': {
+    steps: [
+      'De pie, mancuernas delante de los muslos, rodillas apenas flexionadas.',
+      'Lleva la cadera hacia atrás con la espalda recta; las mancuernas bajan pegadas a las piernas en 3".',
+      'Baja hasta media tibia o hasta donde la espalda siga recta, y sube apretando el glúteo.',
+    ],
+    video: 'peso muerto rumano con mancuernas técnica',
+  },
+  'v4-hip-thrust': {
+    steps: [
+      'Espalda alta apoyada en un banco, barra de la Smith sobre la cadera (con almohadilla), pies apoyados.',
+      'Sube la cadera hasta que el cuerpo quede recto de rodillas a hombros, mentón recogido.',
+      'Pausa de 2" arriba apretando el glúteo y baja controlando.',
+    ],
+    video: 'hip thrust en multipower técnica',
+  },
+  'v4-pantorrilla': {
+    steps: [
+      'Punta de un pie en un escalón, mancuerna en la mano del mismo lado y la otra mano apoyada en la pared.',
+      'Baja el talón por debajo del escalón y sube lo más alto posible.',
+      'Pausa de 1-2" arriba. Todas las reps de un pie y después el otro.',
+    ],
+    video: 'elevación de talón a una pierna con mancuerna',
+  },
+  'v4-half-split': {
+    steps: [
+      'Rodilla de atrás apoyada en el suelo, pierna de delante estirada con el talón apoyado y la punta hacia arriba.',
+      'Inclina el tronco sobre la pierna de delante con la espalda recta, llevando la cadera hacia atrás.',
+      'Caderas cuadradas, sin rebotes. Respira normal.',
+    ],
+    video: 'half split stretch técnica',
+  },
+  'v4-paloma': {
+    steps: [
+      'Pierna de delante doblada sobre un banco o mesa, con la espinilla cruzada; la de atrás estirada en el suelo.',
+      'Tronco erguido o inclinado hacia delante, caderas cuadradas.',
+      'Mantén sin rebotes y cambia de lado.',
+    ],
+    video: 'elevated pigeon stretch',
+  },
+  'v4-dom-explosiva': {
+    steps: [
+      'Agarre prono algo más ancho que los hombros. "Rompe la barra": rotación externa de hombros.',
+      'Sube lo más rápido que puedas hasta llevar el pecho a la barra, codos hacia atrás.',
+      'Baja controlando hasta estirar los brazos.',
+    ],
+    video: 'explosive pull up chest to bar',
+  },
+  'v4-agarre-falso': {
+    steps: [
+      'Pon la muñeca por encima de la barra: la palma rodea la barra desde arriba, no solo los dedos.',
+      'Cuélgate con los brazos estirados y los hombros activos (sin hundirte).',
+      'Si molesta la muñeca, empieza con menos segundos.',
+    ],
+    video: 'false grip hang muscle up',
+  },
+  'v4-transicion': {
+    steps: [
+      'Banda atada a la barra y bajo las rodillas o los pies.',
+      'Desde arriba de una dominada, pasa el pecho por encima de la barra llevando los codos hacia atrás, no hacia los lados.',
+      'Termina apoyada sobre la barra y baja controlando.',
+    ],
+    video: 'muscle up transition band assisted',
+  },
+  'v4-mu-negativa': {
+    steps: [
+      'Sube a la posición de arriba (apoyada sobre la barra, brazos estirados) con un salto o un banco.',
+      'Baja muy lento por la transición, con los codos pegados al cuerpo.',
+      'Sigue bajando hasta colgada con los brazos estirados.',
+    ],
+    video: 'negative muscle up bar',
+  },
+  'v4-dom-lastre': {
+    steps: [
+      'Cinturón con disco o mochila con peso.',
+      'Desde colgada con brazos estirados, sube hasta pasar la barbilla por encima de la barra.',
+      'Baja controlando hasta estirar los brazos del todo.',
+    ],
+    video: 'dominadas con lastre técnica',
+  },
+  'v4-front-lever': {
+    steps: [
+      'Desde colgada, sube a la posición de front lever tuck: espalda horizontal, rodillas recogidas al pecho y brazos estirados.',
+      'Baja lento manteniendo los brazos estirados hasta quedar vertical.',
+      'Una con énfasis en el lado izquierdo y otra en el derecho por serie.',
+    ],
+    video: 'tuck front lever negatives',
+  },
+  'v4-puente-iso': {
+    steps: [
+      'Tumbada boca arriba, un pie apoyado (en la punta) y la otra pierna en el aire.',
+      'Sube la cadera hasta alinearla con rodilla y hombro.',
+      'Mantén arriba sin dejar caer la cadera. Cambia de pierna.',
+    ],
+    video: 'single leg glute bridge hold',
+  },
+  'v4-zancada-iso': {
+    steps: [
+      'Kettlebell pegada al pecho. Zancada larga con los dos talones levantados.',
+      'Baja hasta que las dos rodillas queden cerca de 90° y quédate quieta.',
+      'Talones siempre arriba. Cambia de pierna.',
+    ],
+    video: 'isometric split squat hold kettlebell',
+  },
+  'v4-sissy-iso': {
+    steps: [
+      'De pie, un balón entre las rodillas. Sujeta la carga en el pecho.',
+      'Lleva las rodillas hacia delante, por delante del torso, ponte de puntillas e inclina el tronco recto hacia atrás.',
+      'Quédate quieta abajo apretando el balón.',
+    ],
+    video: 'sissy squat isometric hold',
+  },
+  'v4-iso-max': {
+    steps: [
+      'Ponte en zancada contra algo que no se mueve (por ejemplo, el pie de delante bajo una barra fija o empujando una pared).',
+      'Empuja el suelo con toda la fuerza que puedas, sin moverte.',
+      'Respira y no bloquees el aire. Cambia de pierna.',
+    ],
+    video: 'isometric overcoming split squat',
+  },
+  'v4-archer': {
+    steps: [
+      'Manos muy separadas, cuerpo en plancha.',
+      'Baja hacia una mano doblando ese codo; el otro brazo queda casi estirado hacia el lado.',
+      'Sube y repite hacia el otro lado. Anota cuántas series salen en 8\'.',
+    ],
+    video: 'archer push up técnica',
+  },
+  'v4-press-militar': {
+    steps: [
+      'De pie, mancuernas a la altura de los hombros. Glúteo y abdomen apretados.',
+      'Empuja hacia arriba hasta estirar los brazos, sin arquear la zona lumbar.',
+      'Baja controlando hasta los hombros.',
+    ],
+    video: 'press militar con mancuernas de pie',
+  },
+  'v4-remo-mancuerna': {
+    steps: [
+      'Una rodilla y una mano en el banco, espalda recta y mirada al suelo.',
+      'Tira de la mancuerna hacia la cadera con el codo pegado al cuerpo.',
+      'Baja controlando. Todas las reps de un lado y después el otro.',
+    ],
+    video: 'remo con mancuerna a una mano',
+  },
+  'v4-goblet': {
+    steps: [
+      'Kettlebell pegada al pecho, pies algo más abiertos que los hombros.',
+      'Baja con el pecho arriba y los codos por dentro de las rodillas.',
+      'Sube empujando con todo el pie.',
+    ],
+    video: 'goblet squat kettlebell técnica',
+  },
+  'v4-curl-fitball': {
+    steps: [
+      'Tumbada boca arriba con un talón sobre el fitball y la otra pierna en el aire. Sube la cadera.',
+      'Lleva la pelota hacia el glúteo doblando la rodilla, sin bajar la cadera.',
+      'Estira la pierna despacio. Cambia de lado.',
+    ],
+    video: 'single leg stability ball hamstring curl',
+  },
+  'v4-silla-romana': {
+    steps: [
+      'Cadera apoyada en el banco de hiperextensión, pies sujetos.',
+      'Flexión/extensión: baja el tronco con la espalda recta y sube hasta alinearlo con las piernas.',
+      'Rotacional: sube girando el tronco hacia un lado, alternando. Isométrico: mantén el cuerpo recto 20-30".',
+      'Sin banco: extensión de espalda tumbada boca abajo sobre un fitball.',
+    ],
+    video: 'roman chair back extension variations',
+  },
+  'v4-rotacion-banda': {
+    steps: [
+      'De lado al anclaje de la banda, brazos estirados delante del pecho sujetando la banda.',
+      'La banda tira hacia un lado: resiste sin girar el tronco, o gira despacio y controlando.',
+      'Todas las reps de un lado y después el otro.',
+    ],
+    video: 'pallof press rotation band',
+  },
+  'v4-flexor-cadera': {
+    steps: [
+      'Rodilla de atrás apoyada, pie de delante a un paso largo.',
+      'Empuja la cadera hacia delante con el glúteo de atrás apretado y el tronco erguido.',
+      '6-8 repeticiones suaves y después sostén. Caderas cuadradas, sin rebotes.',
+    ],
+    video: 'kneeling hip flexor stretch',
+  },
+  'v4-almohada': {
+    steps: [
+      'Siéntate y coloca una almohada firme detrás del torso, a la altura de la espalda media.',
+      'Déjate caer hacia atrás sobre ella con los brazos abiertos.',
+      'Respiración lenta, sin forzar la zona lumbar.',
+    ],
+    video: 'thoracic extension pillow stretch',
+  },
+  'v4-mesa-invertida': {
+    steps: [
+      'Sentada, manos apoyadas detrás de la cadera con los dedos hacia los pies y pies apoyados.',
+      'Sube la cadera hasta que el tronco quede plano como una mesa, rodillas a 90°.',
+      'Mantén apretando el glúteo, hombros lejos de las orejas.',
+    ],
+    video: 'reverse table top pose',
+  },
+  'v4-bebe-feliz': {
+    steps: [
+      'Tumbada boca arriba, lleva las rodillas hacia las axilas y agarra los pies por fuera.',
+      'Balancea con calma de un lado al otro.',
+      'Cada balanceo hacia un lado cuenta 1.',
+    ],
+    video: 'happy baby pose rocking',
+  },
+  'v4-arco': {
+    steps: [
+      'Boca abajo, dobla las rodillas y agarra los tobillos por fuera.',
+      'Empuja los pies contra las manos para despegar pecho y muslos del suelo.',
+      'Respira y baja sin forzar.',
+    ],
+    video: 'postura del arco yoga dhanurasana',
+  },
+  'v4-cobra': {
+    steps: [
+      'Boca abajo, manos bajo los hombros.',
+      'Estira los brazos y eleva el pecho dejando la cadera en el suelo.',
+      'Hombros lejos de las orejas, cuello largo.',
+    ],
+    video: 'postura de la cobra yoga',
+  },
+  'v4-lateral': {
+    steps: [
+      'De pie, cruza una pierna por detrás de la otra.',
+      'Lleva los brazos por encima de la cabeza e inclina el tronco hacia el lado de la pierna de delante.',
+      'Cambia de lado.',
+    ],
+    video: 'standing cross leg side stretch',
+  },
+  'v4-zancada-rotacion': {
+    steps: [
+      'Zancada baja con las dos manos en el suelo por dentro del pie de delante.',
+      'Abre el brazo del lado de la pierna de delante hacia el techo girando el pecho.',
+      'Vuelve y repite. Cambia de lado.',
+    ],
+    video: 'world greatest stretch lunge rotation',
+  },
+  'v4-flexion-rotacion': {
+    steps: [
+      'Haz una flexión.',
+      'Al subir, apoya una mano y abre el otro brazo hacia el techo girando todo el cuerpo (forma de T).',
+      'Vuelve y alterna el lado en cada repetición.',
+    ],
+    video: 't push up rotation',
+  },
 }
 
 export function youtubeSearch(query: string) {

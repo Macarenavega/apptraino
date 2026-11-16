@@ -83,7 +83,7 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
         <div>
           <h1 className="text-[32px] leading-tight font-light">{workout.sessionName}</h1>
           <p className="text-sm text-muted">
-            {doneSets}/{totalSets} series · Fase {workout.phase}
+            {doneSets}/{totalSets} series{(workout.sessionId.startsWith('v4') || workout.sessionName === 'Hipopresivos') ? '' : ` · Fase ${workout.phase}`}
           </p>
         </div>
         <button className="btn-ghost text-sm" onClick={() => confirm('¿Descartar este entrenamiento?') && onDiscard()}>
@@ -109,7 +109,9 @@ export function WorkoutView({ workout, approvals, timer, onChange, onFinish, onD
       <section className="card">
         <button className="flex w-full items-center justify-between" onClick={() => setShowWarmup((v) => !v)}>
           <span className="font-semibold">
-            Calentamiento ({session.warmup ? `~${session.warmup.length > 2 ? 10 : 5}'` : "~15'"}) {warmupDone && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
+            {workout.sessionId.startsWith('v4')
+              ? "Movilidad previa (~5')"
+              : `Calentamiento (${session.warmup ? `~${session.warmup.length > 2 ? 10 : 5}'` : "~15'"})`} {warmupDone && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
           </span>
           <span className="text-muted">{showWarmup ? '▲' : '▼'}</span>
         </button>

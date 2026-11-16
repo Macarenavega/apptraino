@@ -8,6 +8,7 @@ import {
   type CautionId,
   type ProgramId,
 } from '../data/routine'
+import { V4_PROGRESSIONS, V4_START } from '../data/v4'
 import { programOf, type AppState } from '../lib/store'
 
 type Props = {
@@ -168,7 +169,26 @@ export function SettingsView({ state, update }: Props) {
         )}
       </section>
 
-      {programOf(state) === 'm2' ? (
+      {programOf(state) === 'v4' ? (
+        <>
+          <section className="card">
+            <h2 className="font-semibold">Progresiones (semana tipo v4)</h2>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+              {V4_PROGRESSIONS.map((r) => (
+                <li key={r}>{r}</li>
+              ))}
+            </ul>
+          </section>
+          <section className="card">
+            <h2 className="font-semibold">Punto de partida (marcas hasta el 23 de octubre)</h2>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+              {V4_START.map((r) => (
+                <li key={r}>{r}</li>
+              ))}
+            </ul>
+          </section>
+        </>
+      ) : programOf(state) === 'm2' ? (
         <>
           <section className="card">
             <h2 className="font-semibold">Progresión de nivel (Mes 2)</h2>

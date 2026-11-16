@@ -1,4 +1,5 @@
 // Rutina Principiante — Calistenia: Tren Superior (Fuerza) + Tren Inferior (Hipertrofia)
+import { V4_ORDER, V4_PRIORITY, V4_SCHEDULE, V4_SESSIONS } from './v4'
 
 export type Target =
   | { kind: 'reps'; min: number; max: number; perSide?: boolean }
@@ -58,6 +59,10 @@ export type SessionId =
   | 'm2infA'
   | 'm2supB'
   | 'm2infB'
+  | 'v4d1'
+  | 'v4d2'
+  | 'v4d3'
+  | 'v4d4'
 
 export type Session = {
   id: SessionId
@@ -664,6 +669,7 @@ export const SESSIONS: Record<SessionId, Session> = {
   },
   gime: GIME_SESSION,
   fullbody: FULLBODY_SESSION,
+  ...V4_SESSIONS,
   abs: {
     id: 'abs',
     name: 'Abdomen (4 ejercicios)',
@@ -994,10 +1000,16 @@ export const SCHEDULE: Record<1 | 2, DayPlan[]> = {
   ],
 }
 
-export type ProgramId = 'm1' | 'm2'
+export type ProgramId = 'm1' | 'm2' | 'v4'
 
 /** Orden y días por defecto de un plan semanal */
-export type WeekPlanDef = { label: string; order: SessionId[]; schedule: DayPlan[] }
+export type WeekPlanDef = {
+  label: string
+  order: SessionId[]
+  schedule: DayPlan[]
+  /** Con menos días que sesiones, cuáles se conservan primero (si no, las primeras del orden) */
+  priority?: SessionId[]
+}
 
 export const M2_ORDER: SessionId[] = ['m2supA', 'm2infA', 'm2supB', 'm2infB']
 
@@ -1014,13 +1026,15 @@ const M2_SCHEDULE: DayPlan[] = [
 export const PROGRAM_NAMES: Record<ProgramId, { name: string; description: string }> = {
   m1: { name: 'Mes 1', description: 'Rutina principiante: Fase 1 (4 días) y Fase 2 (5-6 días)' },
   m2: { name: 'Mes 2', description: '4 días, 4 semanas: mismos días, sube la dificultad' },
+  v4: { name: 'Semana tipo v4', description: 'Piernas, dominadas, movilidad con fuerza y full body, con hipopresivos diarios' },
 }
 
 /** Programa que se usa si no se eligió otro */
-export const DEFAULT_PROGRAM: ProgramId = 'm2'
+export const DEFAULT_PROGRAM: ProgramId = 'v4'
 
 /** Plan semanal según programa (y fase, en el Mes 1) */
 export function weekPlanFor(program: ProgramId, phase: 1 | 2): WeekPlanDef {
+  if (program === 'v4') return { label: 'Semana tipo v4', order: V4_ORDER, schedule: V4_SCHEDULE, priority: V4_PRIORITY }
   if (program === 'm2') return { label: 'Mes 2', order: M2_ORDER, schedule: M2_SCHEDULE }
   return { label: `Fase ${phase}`, order: PHASE_ORDER[phase], schedule: SCHEDULE[phase] }
 }
@@ -1097,14 +1111,23 @@ export function planWeek(def: WeekPlanDef, days?: number[]): DayPlan[] {
   const plan: DayPlan[] = Array.from({ length: 7 }, () => ({ restLabel: REST_CUSTOM }))
   // La semana empieza el lunes: L M X J V S D
   const sorted = [...days].sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7))
-  sorted.slice(0, def.order.length).forEach((d, i) => (plan[d] = { session: def.order[i] }))
+  const kept = keptSessions(def, sorted.length)
+  sorted.slice(0, kept.length).forEach((d, i) => (plan[d] = { session: kept[i] }))
   return plan
+}
+
+/** Sesiones que entran con n días: las de mayor prioridad, en el orden de la semana */
+function keptSessions(def: WeekPlanDef, n: number) {
+  if (n >= def.order.length || !def.priority) return def.order.slice(0, n)
+  const keep = new Set(def.priority.slice(0, n))
+  return def.order.filter((id) => keep.has(id))
 }
 
 /** Sesiones del plan que no entran en los días elegidos */
 export function missingSessions(def: WeekPlanDef, days?: number[]) {
   if (!days) return []
-  return def.order.slice(days.length)
+  const kept = new Set(keptSessions(def, days.length))
+  return def.order.filter((id) => !kept.has(id))
 }
 
 export const PHASE2_CRITERIA = [
@@ -1386,4 +1409,27 @@ export const EXERCISE_IMAGES: Record<string, ExerciseImage> = {
   'gime-plancha-pareja': { folder: 'Plank' },
   'gime-pallof': { folder: 'Pallof_Press' },
   'gime-dead-bug': { folder: 'Dead_Bug' },
+  // Semana tipo v4
+  hipopresivos: { folder: 'Stomach_Vacuum', note: 'La imagen muestra solo el vacío abdominal; las 4 posturas están en los pasos.' },
+  'v4-smith': { folder: 'Smith_Machine_Squat' },
+  'v4-bulgara': { folder: 'Split_Squat_with_Dumbbells' },
+  'v4-rdl': { folder: 'Stiff-Legged_Dumbbell_Deadlift' },
+  'v4-hip-thrust': { folder: 'Barbell_Hip_Thrust', note: 'La imagen es con barra libre; tú en la máquina Smith.' },
+  'v4-pantorrilla': { folder: 'Standing_Dumbbell_Calf_Raise', note: 'La imagen es a dos piernas; tú a una, con apoyo.' },
+  'v4-dom-explosiva': { folder: 'Pullups', note: 'Tú subes rápido hasta llevar el pecho a la barra.' },
+  'v4-transicion': { folder: 'Band_Assisted_Pull-Up', note: 'Misma banda; tú pasas el pecho por encima de la barra.' },
+  'v4-mu-negativa': { folder: 'Muscle_Up', note: 'Tú haces solo la bajada, de arriba de la barra hacia abajo.' },
+  'v4-dom-lastre': { folder: 'Weighted_Pull_Ups' },
+  'v4-puente-iso': { folder: 'Single_Leg_Glute_Bridge', note: 'Tú te quedas quieta arriba.' },
+  'v4-zancada-iso': { folder: 'Split_Squats', note: 'Tú te quedas quieta abajo, con la kettlebell en el pecho.' },
+  'v4-sissy-iso': { folder: 'Weighted_Sissy_Squat', note: 'Tú te quedas quieta abajo, con un balón entre las rodillas.' },
+  'v4-archer': { folder: 'Push-Up_Wide', note: 'La imagen es una flexión abierta; en la archer bajas hacia un brazo y el otro queda estirado.' },
+  'v4-press-militar': { folder: 'Dumbbell_Shoulder_Press', note: 'Tú de pie.' },
+  'v4-remo-mancuerna': { folder: 'One-Arm_Dumbbell_Row' },
+  'v4-goblet': { folder: 'Goblet_Squat', note: 'Tú con kettlebell.' },
+  'v4-curl-fitball': { folder: 'Ball_Leg_Curl', note: 'La imagen es a dos piernas; tú a una.' },
+  'v4-silla-romana': { folder: 'Hyperextensions_Back_Extensions' },
+  'v4-rotacion-banda': { folder: 'Pallof_Press_With_Rotation' },
+  'v4-flexor-cadera': { folder: 'Kneeling_Hip_Flexor' },
+  'v4-half-split': { folder: 'Hamstring_Stretch', note: 'Tú con la rodilla de atrás apoyada y el tronco sobre la pierna de delante.' },
 }

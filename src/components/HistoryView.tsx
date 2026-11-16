@@ -43,7 +43,7 @@ export function HistoryView({ history, bodyWeight, onDelete }: Props) {
               <p className="text-sm text-muted">
                 {dateFmt.format(new Date(w.startedAt))} · {done}/{total} series
                 {mins !== null && ` · ${mins}'`}
-                {(w.bodyWeight ?? bodyWeight) && ` · ≈${Math.round(estimateCalories(w, (w.bodyWeight ?? bodyWeight)!).kcal)} kcal`} · Fase {w.phase}
+                {(w.bodyWeight ?? bodyWeight) && ` · ≈${Math.round(estimateCalories(w, (w.bodyWeight ?? bodyWeight)!).kcal)} kcal`}{(w.sessionId.startsWith('v4') || w.sessionName === 'Hipopresivos') ? '' : ` · Fase ${w.phase}`}
               </p>
             </button>
             {isOpen && (
